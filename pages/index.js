@@ -5,7 +5,6 @@ import TaskList from "components/TaskList";
 import PriorityTasks from "components/PriorityTasks";
 import CompletedTasks from "components/CompletedTasks";
 import LandingPage from "components/LandingPage";
-import Head from "next/head";
 
 export default function Home() {
   const { user, isLoading } = useUser();

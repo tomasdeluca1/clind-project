@@ -7,10 +7,22 @@ import Head from "next/head";
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const theme = localStorage.getItem("theme");
-      if (theme) {
-        document.documentElement.setAttribute("data-theme", theme);
-      }
+      const fetchUserTheme = async () => {
+        try {
+          const response = await fetch("/api/user-settings");
+          if (response.ok) {
+            const { theme } = await response.json();
+            document.documentElement.setAttribute("data-theme", theme);
+          } else {
+            document.documentElement.setAttribute("data-theme", "emerald");
+          }
+        } catch (error) {
+          console.error("Error fetching user theme:", error);
+          document.documentElement.setAttribute("data-theme", "emerald");
+        }
+      };
+
+      fetchUserTheme();
     }
   }, []);
   return (
