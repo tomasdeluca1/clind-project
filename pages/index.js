@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import TaskInput from "@/components/TaskInput";
-import TaskList from "@/components/TaskList";
-import PriorityTasks from "@/components/PriorityTasks";
-import CompletedTasks from "@/components/CompletedTasks";
-import LandingPage from "@/components/LandingPage";
+import TaskInput from "components/TaskInput";
+import TaskList from "components/TaskList";
+import PriorityTasks from "components/PriorityTasks";
+import CompletedTasks from "components/CompletedTasks";
+import LandingPage from "components/LandingPage";
 import Head from "next/head";
 
 export default function Home() {

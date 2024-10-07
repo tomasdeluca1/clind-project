@@ -1,6 +1,6 @@
-import "@/styles/globals.css";
+import "../styles/globals.css";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
-import Layout from "@/components/Layout";
+import Layout from "components/Layout";
 import { useEffect } from "react";
 import Head from "next/head";
 
@@ -53,7 +53,6 @@ function MyApp({ Component, pageProps }) {
         <link rel="apple-touch-icon" sizes="180x180" href="/miniatura.png" />
         <link
           rel="icon"
-          a
           type="image/png"
           sizes="192x192"
           href="/miniatura.png"

@@ -1,4 +1,4 @@
-import { capitalize } from "@/utils/functions";
+import { capitalize } from "utils/functions";
 import { Check, ListStart, Pin, SaveIcon, XCircle } from "lucide-react";
 import { useState } from "react";
 

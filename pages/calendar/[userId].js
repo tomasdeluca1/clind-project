@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useRouter } from "next/router";
-import Modal from "@/components/Modal";
+import Modal from "components/Modal";
 
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
