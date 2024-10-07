@@ -53,6 +53,7 @@ function MyApp({ Component, pageProps }) {
         <link rel="apple-touch-icon" sizes="180x180" href="/miniatura.png" />
         <link
           rel="icon"
+          a
           type="image/png"
           sizes="192x192"
           href="/miniatura.png"
