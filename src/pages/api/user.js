@@ -1,7 +1,10 @@
 import { getSession } from "@auth0/nextjs-auth0";
-import clientPromise from "@/lib/mongodb";
+import { clientPromise } from "@/lib/mongodb";
 
 export default async function handler(req, res) {
+  const client = await clientPromise;
+  const db = client.db("clind-project");
+
   const session = await getSession(req, res);
 
   if (!session || !session.user) {
@@ -10,9 +13,6 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     try {
-      const client = await clientPromise;
-      const db = client.db(process.env.MONGODB_DB);
-
       const { sub, name, email } = req.body;
 
       const existingUser = await db

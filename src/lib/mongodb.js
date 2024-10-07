@@ -11,3 +11,6 @@ export async function connectToDatabase() {
 export function getUserCollection(userId) {
   return `user_${userId}`;
 }
+
+// Add this line to export the client as a named export
+export { client as clientPromise };
