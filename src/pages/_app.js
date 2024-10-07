@@ -1,0 +1,60 @@
+import "@/styles/globals.css";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
+import Layout from "@/components/Layout";
+import { useEffect } from "react";
+import Head from "next/head";
+
+function MyApp({ Component, pageProps }) {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const theme = localStorage.getItem("theme");
+      if (theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+      }
+    }
+  }, []);
+  return (
+    <>
+      <Head>
+        <meta charSet="UTF-8" />
+        <meta name="title" content="Clind - Clear Tasks, Clean Mind" />
+        <meta
+          name="description"
+          content="Clind: Clear Tasks, Clean Mind. Streamline your thoughts, boost productivity, and achieve peace of mind with our intuitive task management app."
+        />
+        <meta
+          name="keywords"
+          content="task management, productivity, mental clarity, brain dump, priority tasks, to-do list, time management, focus, goal setting, personal organization, mindfulness, stress reduction, work-life balance, efficiency, habit formation"
+        />
+        <meta name="author" content="Clind" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="Clind - Clear Tasks, Clean Mind" />
+        <meta
+          property="og:description"
+          content="Declutter your mind and boost productivity with Clind's intuitive task management system. Prioritize, focus, and achieve more."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.clind.site" />
+        <meta property="og:image" content="/og-image-clind.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Clind - Clear Tasks, Clean Mind" />
+        <meta
+          name="twitter:description"
+          content="Streamline your thoughts, boost productivity, and achieve peace of mind with Clind's task management app."
+        />
+        <meta name="twitter:image" content="/og-image-clind.png" />
+        <link rel="canonical" href="https://www.clind.site" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="theme-color" content="#ffffff" />
+      </Head>
+      <UserProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </UserProvider>
+    </>
+  );
+}
+
+export default MyApp;
