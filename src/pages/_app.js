@@ -47,6 +47,22 @@ function MyApp({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#ffffff" />
+        <link rel="icon" sizes="16x16" href="/miniatura.png" />
+        <link rel="icon" sizes="32x32" href="/miniatura.png" />
+        <link rel="icon" sizes="48x48" href="/miniatura.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/miniatura.png" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="/miniatura.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="512x512"
+          href="/miniatura.png"
+        />
       </Head>
       <UserProvider>
         <Layout>
