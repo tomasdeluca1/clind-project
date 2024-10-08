@@ -1,3 +1,4 @@
+"use client";
 import clientPromise from "@/lib/mongodb";
 import { getSession } from "@auth0/nextjs-auth0";
 

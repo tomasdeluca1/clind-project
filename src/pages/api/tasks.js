@@ -1,3 +1,4 @@
+"use client";
 import { ObjectId } from "mongodb";
 import { getSession } from "@auth0/nextjs-auth0";
 import clientPromise from "@/lib/mongodb";
@@ -13,13 +14,13 @@ export default async function handler(req, res) {
 
   const client = await clientPromise;
   const db = client.db();
-
   const collection = db.collection(`user_${userId}`);
 
   switch (method) {
     case "GET":
       try {
-        const tasks = await collection.find({}).limit(100).toArray(); // Limit to 100 tasks
+        const tasks = await collection.find({}).limit(100).toArray();
+        console.log(tasks);
         res.status(200).json(tasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
