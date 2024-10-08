@@ -4,4 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Your custom styles can go here */
+.rbc-time-view {
+  overflow-y: hidden;
+  .rbc-label {
+    display: none;
+  }
+
+  .rbc-time-content {
+    display: none;
+  }
+
+  .rbc-allday-cell {
+    height: 100vh !important;
+    max-height: unset;
+  }
+  .rbc-today {
+    background-color: transparent;
+  }
+}

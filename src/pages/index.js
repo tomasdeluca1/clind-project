@@ -96,42 +96,32 @@ export default function Home({ initialTasks }) {
         Streamline your thoughts, boost productivity, and achieve peace of mind
       </p>
       <TaskInput onAddTask={handleAddTask} />
-      <div className="flex flex-col lg:flex-row mt-8 gap-4">
-        <div className="w-full lg:w-2/3">
-          <h2 className="text-xl font-semibold mb-2">Today&apos;s Tasks</h2>
+      <div className="flex flex-col md:flex-row mt-8 gap-6">
+        <div className="w-full md:w-3/5">
+          <h2 className="text-xl font-semibold mb-2">Today&#39;s tasks</h2>
           <TaskList
             tasks={nonPriorityTasks}
             onUpdateTask={handleUpdateTask}
             onDeleteTask={handleDeleteTask}
             priorityTasks={priorityTasks}
           />
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-2">
-              Today&apos;s Priorities
-            </h2>
+        </div>
+        <div className="w-full md:w-2/5">
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-2">Top 3 Priorities</h2>
             <PriorityTasks
-              tasks={priorityTasks}
+              tasks={priorityTasks.slice(0, 3)}
               onUpdateTask={handleUpdateTask}
               onDeleteTask={handleDeleteTask}
             />
           </div>
-        </div>
-        <div className="w-full lg:w-1/3">
-          <CompletedTasks
-            tasks={tasks.filter((task) => task.isCompleted)}
-            onUpdateTask={handleUpdateTask}
-            onDeleteTask={handleDeleteTask}
-          />
-          {uncompletedTasks.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-2">Uncompleted Tasks</h2>
-              <TaskList
-                tasks={uncompletedTasks}
-                onUpdateTask={handleUpdateTask}
-                onDeleteTask={handleDeleteTask}
-              />
-            </div>
-          )}
+          <div>
+            <CompletedTasks
+              tasks={tasks.filter((task) => task.isCompleted)}
+              onUpdateTask={handleUpdateTask}
+              onDeleteTask={handleDeleteTask}
+            />
+          </div>
         </div>
       </div>
     </div>

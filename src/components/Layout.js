@@ -40,12 +40,18 @@ export default function Layout({ children }) {
                 >
                   <li>
                     <Link href={`/calendar/${user.sub}`}>
-                      Calendar <span className="badge">New</span>
+                      Calendar{" "}
+                      <span className="badge badge-primary glass shadow-sm bg-primary/80">
+                        New
+                      </span>
                     </Link>{" "}
                   </li>
                   <li>
                     <Link href={`/settings/${user.sub}`}>
-                      Settings <span className="badge">New</span>
+                      Settings{" "}
+                      <span className="badge badge-primary glass shadow-sm bg-primary/80">
+                        New
+                      </span>
                     </Link>{" "}
                   </li>
                   <li>

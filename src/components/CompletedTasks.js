@@ -16,7 +16,7 @@ export default function CompletedTasks({ tasks, onUpdateTask, onDeleteTask }) {
         className="text-xl font-semibold mb-2 cursor-pointer flex items-center"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <span className="mr-2">Completed Tasks</span>
+        <span className="mr-2">Completed</span>
         <span className="text-sm text-gray-500">({completedTasks.length})</span>
         <span className="ml-2 transition-transform duration-300 ease-in-out">
           <ChevronRight

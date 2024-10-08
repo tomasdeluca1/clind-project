@@ -20,7 +20,6 @@ export default withApiAuthRequired(async function handler(req, res) {
     case "GET":
       try {
         const tasks = await collection.find({}).limit(100).toArray();
-        console.log(tasks);
         res.status(200).json(tasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);

@@ -4,6 +4,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import Modal from "@/components/Modal";
 import { useState } from "react";
 import { getSession } from "@auth0/nextjs-auth0";
+import CustomToolbar from "@/components/CustomToolbar";
+import CustomDateHeader from "@/components/CustomDateHeader";
 
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
@@ -43,36 +45,54 @@ export default function UserCalendar({ initialTasks }) {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Task Calendar</h1>
-      <div className="bg-base-200 p-4 rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold mb-2">Mind Break Calendar</h1>
+      <p className="text-lg text-base-content/70 mb-6">
+        Clear your mind, boost your output, and tap into your brain's hidden
+        power
+      </p>
+      <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <Calendar
           localizer={localizer}
           events={events}
           startAccessor="start"
           endAccessor="end"
-          style={{ height: "70vh", maxHeight: 700 }}
+          style={{ height: "75vh", maxHeight: 800 }}
           onSelectEvent={handleSelectEvent}
           onSelectSlot={handleSelectSlot}
           selectable
-          className="bg-base-100 text-base-content rounded-lg shadow-md"
+          className="text-base-content"
           views={["month", "week", "day"]}
           defaultView="month"
           toolbar={true}
           popup
           eventPropGetter={(event) => ({
-            className: `bg-primary text-primary-content rounded-md p-1 ${
+            className: `bg-primary/90 text-primary-content rounded-lg p-2 shadow-md transition-all duration-300 hover:bg-primary ${
               event.resource.isPriority ? "border-l-4 border-accent" : ""
             }`,
           })}
           dayPropGetter={(date) => ({
-            className: "hover:bg-base-200 transition-colors duration-200",
+            className: "hover:bg-base-200 transition-colors duration-300",
           })}
+          components={{
+            toolbar: CustomToolbar,
+            month: { dateHeader: CustomDateHeader },
+          }}
+          formats={{
+            timeGutterFormat: () => {},
+            dayFormat: "ddd",
+            dayRangeHeaderFormat: ({ start, end }) =>
+              `${moment(start).format("MMM D")} - ${moment(end).format(
+                "MMM D"
+              )}`,
+          }}
+          allDayAccessor={() => true}
+          showAllEvents
         />
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {selectedDate && (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">
+          <div className="bg-base-100 p-4 md:p-6 rounded-xl md:h-auto pb-10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-primary">
               {moment(selectedDate).format("MMMM D, YYYY")}
             </h2>
             <DaySummary summary={getDaySummary(selectedDate)} />
@@ -88,21 +108,33 @@ function DaySummary({ summary }) {
 
   return (
     <div className="space-y-6">
-      <TaskSection title="All Tasks" tasks={dayTasks} icon="clipboard-list" />
-      <TaskSection title="Priority Tasks" tasks={priorityTasks} icon="star" />
       <TaskSection
-        title="Completed Tasks"
+        title="Completed Stuff"
         tasks={completedTasks}
         icon="check-circle"
+      />
+      <TaskSection
+        title="Top responsabilities"
+        tasks={priorityTasks}
+        icon="star"
+      />
+      <TaskSection
+        title="Your mind this day"
+        tasks={dayTasks}
+        icon="clipboard-list"
       />
     </div>
   );
 }
 
-function TaskSection({ title, tasks, icon }) {
+function TaskSection({ title, tasks, icon, green }) {
   return (
     <section className="bg-base-200 rounded-lg p-4 shadow-md">
-      <h3 className="text-xl font-semibold mb-3 flex items-center">
+      <h3
+        className={`text-xl font-semibold mb-3 flex items-center ${
+          green && "text-success"
+        }`}
+      >
         <Icon name={icon} className="w-6 h-6 mr-2" />
         {title}
       </h3>

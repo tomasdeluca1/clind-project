@@ -6,9 +6,24 @@ import { useEffect } from "react";
 
 function MyApp({ Component, pageProps, initialTheme }) {
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("theme", initialTheme);
-    }
+    const setUserTheme = async () => {
+      if (typeof window !== "undefined") {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`
+        );
+        if (response.ok) {
+          const { theme } = await response.json();
+          document.documentElement.setAttribute("data-theme", theme);
+          localStorage.setItem("theme", theme);
+        } else {
+          // Fallback to initialTheme if user settings can't be fetched
+          document.documentElement.setAttribute("data-theme", "emerald");
+          localStorage.setItem("theme", "emerald");
+        }
+      }
+    };
+
+    setUserTheme();
   }, [initialTheme]);
   return (
     <>
