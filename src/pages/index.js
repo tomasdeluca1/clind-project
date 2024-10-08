@@ -28,21 +28,27 @@ export default function Home({ initialTasks }) {
   }, [initialTasks]);
 
   async function handleAddTask(text) {
-    const response = await fetch("/api/tasks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      }
+    );
     const newTask = await response.json();
     setTasks((prevTasks) => [...prevTasks, newTask]);
   }
 
   async function handleUpdateTask(id, updateData) {
-    const response = await fetch("/api/tasks", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, ...updateData }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...updateData }),
+      }
+    );
     if (response.ok) {
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
@@ -58,11 +64,14 @@ export default function Home({ initialTasks }) {
   }
 
   async function handleDeleteTask(id) {
-    const response = await fetch("/api/tasks", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      }
+    );
     if (response.ok) {
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
       setUncompletedTasks((prevTasks) =>

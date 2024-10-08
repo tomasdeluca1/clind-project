@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, ChevronDown, ChevronRight, Trash, XCircle } from "lucide-react";
+import { ChevronRight, Trash, XCircle } from "lucide-react";
 
 export default function CompletedTasks({ tasks, onUpdateTask, onDeleteTask }) {
   const [isExpanded, setIsExpanded] = useState(false);

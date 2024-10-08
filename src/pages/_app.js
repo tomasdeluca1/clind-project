@@ -2,8 +2,14 @@ import "../styles/globals.css";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import Layout from "@/components/Layout";
 import Head from "next/head";
+import { useEffect } from "react";
 
 function MyApp({ Component, pageProps, initialTheme }) {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme", initialTheme);
+    }
+  }, [initialTheme]);
   return (
     <>
       <Head>

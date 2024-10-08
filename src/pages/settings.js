@@ -13,14 +13,16 @@ export default function Settings() {
   }, [user]);
 
   async function fetchUserSettings() {
-    const response = await fetch(`/api/user-settings`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`
+    );
     const settings = await response.json();
     setTheme(settings.theme);
   }
 
   async function handleThemeChange(newTheme) {
     setTheme(newTheme);
-    await fetch("/api/user-settings", {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ theme: newTheme }),
