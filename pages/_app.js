@@ -6,36 +6,22 @@ import Head from "next/head";
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const fetchUserTheme = async () => {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 seconds timeout
-
-          const response = await fetch("/api/user-settings", {
-            signal: controller.signal,
-          });
-
-          clearTimeout(timeoutId);
-
-          if (response.ok) {
-            const { theme } = await response.json();
-            document.documentElement.setAttribute("data-theme", theme);
-          } else {
-            document.documentElement.setAttribute("data-theme", "emerald");
-          }
-        } catch (error) {
-          if (error.name === "AbortError") {
-            console.error("Request timed out");
-          } else {
-            console.error("Error fetching user theme:", error);
-          }
+    const fetchUserTheme = async () => {
+      try {
+        const response = await fetch("/api/user-settings");
+        if (response.ok) {
+          const { theme } = await response.json();
+          document.documentElement.setAttribute("data-theme", theme);
+        } else {
           document.documentElement.setAttribute("data-theme", "emerald");
         }
-      };
+      } catch (error) {
+        console.error("Error fetching user theme:", error);
+        document.documentElement.setAttribute("data-theme", "emerald");
+      }
+    };
 
-      fetchUserTheme();
-    }
+    fetchUserTheme();
   }, []);
   return (
     <>
