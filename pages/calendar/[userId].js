@@ -193,32 +193,52 @@ function Icon({ name, className }) {
 
   return icons[name] || null;
 }
-
 export async function getServerSideProps(context) {
-  const session = await getSession(context.req, context.res);
-  if (!session || !session.user) {
+  try {
+    const session = await getSession(context.req, context.res);
+    if (!session || !session.user) {
+      return {
+        redirect: {
+          destination: "/api/auth/login",
+          permanent: false,
+        },
+      };
+    }
+
+    const { userId } = context.params;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/tasks?userId=${userId}`,
+      {
+        headers: {
+          Cookie: context.req.headers.cookie,
+        },
+        signal: controller.signal,
+      }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const initialTasks = await response.json();
+
     return {
-      redirect: {
-        destination: "/api/auth/login",
-        permanent: false,
+      props: {
+        initialTasks,
+      },
+    };
+  } catch (error) {
+    console.error("Error in getServerSideProps:", error);
+    return {
+      props: {
+        initialTasks: [],
+        error: "Failed to fetch tasks. Please try again later.",
       },
     };
   }
-
-  const { userId } = context.params;
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/tasks?userId=${userId}`,
-    {
-      headers: {
-        Cookie: context.req.headers.cookie,
-      },
-    }
-  );
-  const initialTasks = await response.json();
-
-  return {
-    props: {
-      initialTasks,
-    },
-  };
 }
