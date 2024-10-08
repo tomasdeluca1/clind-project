@@ -39,74 +39,75 @@ export default function TaskList({
 
   return (
     <ul className="space-y-2">
-      {tasks.map((task) => (
-        <li
-          key={task._id}
-          className={`flex items-center justify-between p-2 rounded border-0 ${
-            task.isCompleted ? "bg-success/20" : "bg-primary/5"
-          }`}
-        >
-          <button
-            onClick={() => handleComplete(task)}
-            className={`btn btn-sm btn-outline mr-1 btn-ghost bg-transparent ${
-              task.isCompleted ? "text-success" : "text-primary"
-            } hover:bg-transparent border-0 tooltip-top tooltip`}
-            data-tip={
-              task.isCompleted ? "Mark as incomplete" : "Mark as complete"
-            }
+      {tasks &&
+        tasks.map((task) => (
+          <li
+            key={task._id}
+            className={`flex items-center justify-between p-2 rounded border-0 ${
+              task.isCompleted ? "bg-success/20" : "bg-primary/5"
+            }`}
           >
-            {task.isCompleted ? <XCircle /> : <Check />}
-          </button>
-
-          {!task.isCompleted && priorityTasks.length < 3 && (
             <button
-              onClick={() => handlePrioritize(task)}
-              className="btn btn-sm btn-outline mr-1 btn-ghost bg-transparent text-success hover:bg-success border-0 hover:text-black tooltip-top tooltip tooltip-success"
-              data-tip="Set as priority"
+              onClick={() => handleComplete(task)}
+              className={`btn btn-sm btn-outline mr-1 btn-ghost bg-transparent ${
+                task.isCompleted ? "text-success" : "text-primary"
+              } hover:bg-transparent border-0 tooltip-top tooltip`}
+              data-tip={
+                task.isCompleted ? "Mark as incomplete" : "Mark as complete"
+              }
             >
-              <Pin />
+              {task.isCompleted ? <XCircle /> : <Check />}
             </button>
-          )}
-          {editingId === task._id ? (
-            <div className="flex items-center w-full">
-              <input
-                type="text"
-                value={editText}
-                onChange={(e) => setEditText(e.target.value)}
-                className="input input-bordered input-sm w-full max-w-xs mr-2"
-              />
+
+            {!task.isCompleted && priorityTasks.length < 3 && (
               <button
-                onClick={() => handleSave(task)}
-                className="btn btn-sm btn-primary text-white"
+                onClick={() => handlePrioritize(task)}
+                className="btn btn-sm btn-outline mr-1 btn-ghost bg-transparent text-success hover:bg-success border-0 hover:text-black tooltip-top tooltip tooltip-success"
+                data-tip="Set as priority"
               >
-                Save
+                <Pin />
               </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between w-full">
-              <span className={task.isCompleted ? "line-through" : ""}>
-                {capitalize(task.text)}
-              </span>
-              <div className="flex items-center">
-                {!task.isCompleted && (
-                  <button
-                    onClick={() => handleEdit(task)}
-                    className="btn btn-sm btn-ghost mr-1"
-                  >
-                    Edit
-                  </button>
-                )}
+            )}
+            {editingId === task._id ? (
+              <div className="flex items-center w-full">
+                <input
+                  type="text"
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  className="input input-bordered input-sm w-full max-w-xs mr-2"
+                />
                 <button
-                  onClick={() => onDeleteTask(task._id)}
-                  className="btn btn-sm btn-ghost text-error"
+                  onClick={() => handleSave(task)}
+                  className="btn btn-sm btn-primary text-white"
                 >
-                  Delete
+                  Save
                 </button>
               </div>
-            </div>
-          )}
-        </li>
-      ))}
+            ) : (
+              <div className="flex items-center justify-between w-full">
+                <span className={task.isCompleted ? "line-through" : ""}>
+                  {capitalize(task.text)}
+                </span>
+                <div className="flex items-center">
+                  {!task.isCompleted && (
+                    <button
+                      onClick={() => handleEdit(task)}
+                      className="btn btn-sm btn-ghost mr-1"
+                    >
+                      Edit
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onDeleteTask(task._id)}
+                    className="btn btn-sm btn-ghost text-error"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
     </ul>
   );
 }
