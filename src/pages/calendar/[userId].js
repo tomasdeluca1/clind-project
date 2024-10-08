@@ -1,7 +1,7 @@
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import Modal from "components/Modal";
+import Modal from "@/components/Modal";
 import { useState } from "react";
 import { getSession } from "@auth0/nextjs-auth0";
 

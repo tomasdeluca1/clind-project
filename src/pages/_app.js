@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
-import Layout from "components/Layout";
+import Layout from "@/components/Layout";
 import { useEffect } from "react";
 import Head from "next/head";
 

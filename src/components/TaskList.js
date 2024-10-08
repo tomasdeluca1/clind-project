@@ -1,6 +1,6 @@
-import { capitalize } from "utils/functions";
-import { Check, ListStart, Pin, SaveIcon, XCircle } from "lucide-react";
+import { Check, Pin, XCircle } from "lucide-react";
 import { useState } from "react";
+import { capitalize } from "../utils/functions";
 
 export default function TaskList({
   tasks,
