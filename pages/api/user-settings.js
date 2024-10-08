@@ -3,6 +3,7 @@ import { getSession } from "@auth0/nextjs-auth0";
 
 export default async function handler(req, res) {
   const session = await getSession(req, res);
+
   if (!session || !session.user) {
     return res.status(401).json({ error: "Not authenticated" });
   }
@@ -10,10 +11,9 @@ export default async function handler(req, res) {
   const userId = session.user.sub;
   const db = await connectToDatabase();
   const collection = db.collection("users");
-
   switch (req.method) {
     case "GET":
-      const settings = await collection.findOne({ userId });
+      const settings = await collection.findOne({ auth0Id: userId });
       res.status(200).json(settings || { userId, theme: "emerald" });
       break;
 

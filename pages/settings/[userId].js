@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { capitalize } from "utils/functions";
+import { getSession } from "@auth0/nextjs-auth0";
 
 const themes = [
   "light",
@@ -33,17 +34,15 @@ const themes = [
   "winter",
 ];
 
-export default function UserSettings() {
+export default function UserSettings({ initialTheme }) {
   const { user, error, isLoading } = useUser();
-  const [currentTheme, setCurrentTheme] = useState("light");
+  const [currentTheme, setCurrentTheme] = useState(initialTheme);
   const router = useRouter();
   const { userId } = router.query;
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "light";
-    setCurrentTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
-  }, []);
+    document.documentElement.setAttribute("data-theme", currentTheme);
+  }, [currentTheme]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -58,8 +57,6 @@ export default function UserSettings() {
 
   const handleThemeChange = async (newTheme) => {
     setCurrentTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
 
     try {
       const response = await fetch("/api/user-settings", {
@@ -131,4 +128,38 @@ export default function UserSettings() {
       </Link>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context.req, context.res);
+  if (!session || !session.user) {
+    return {
+      redirect: {
+        destination: "/api/auth/login",
+        permanent: false,
+      },
+    };
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`,
+    {
+      headers: {
+        Cookie: context.req.headers.cookie,
+      },
+    }
+  );
+  if (!response.ok) {
+    console.error("Failed to fetch user settings");
+    return { props: { initialTheme: "emerald" } };
+  }
+  const userSettings = await response.json();
+
+  const initialTheme = userSettings.theme || "emerald";
+
+  return {
+    props: {
+      initialTheme,
+    },
+  };
 }
