@@ -28,54 +28,22 @@ export default function Home({ initialTasks }) {
   }, [initialTasks]);
 
   async function handleAddTask(text) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
-
-      const response = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const newTask = await response.json();
-      setTasks((prevTasks) => [...prevTasks, newTask]);
-    } catch (error) {
-      if (error.name === "AbortError") {
-        console.error("Request timed out");
-        // Handle timeout (e.g., show error message to user)
-      } else {
-        console.error("Error adding task:", error);
-        // Handle other errors
-      }
-    }
+    const response = await fetch("/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    const newTask = await response.json();
+    setTasks((prevTasks) => [...prevTasks, newTask]);
   }
 
   async function handleUpdateTask(id, updateData) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
-
-      const response = await fetch("/api/tasks", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...updateData }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
+    const response = await fetch("/api/tasks", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, ...updateData }),
+    });
+    if (response.ok) {
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
           task._id === id ? { ...task, ...updateData } : task
@@ -86,47 +54,20 @@ export default function Home({ initialTasks }) {
           prevTasks.filter((task) => task._id !== id)
         );
       }
-    } catch (error) {
-      if (error.name === "AbortError") {
-        console.error("Request timed out");
-        // Handle timeout (e.g., show error message to user)
-      } else {
-        console.error("Error updating task:", error);
-        // Handle other errors
-      }
     }
   }
 
   async function handleDeleteTask(id) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
-
-      const response = await fetch("/api/tasks", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
+    const response = await fetch("/api/tasks", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (response.ok) {
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
       setUncompletedTasks((prevTasks) =>
         prevTasks.filter((task) => task._id !== id)
       );
-    } catch (error) {
-      if (error.name === "AbortError") {
-        console.error("Request timed out");
-        // Handle timeout (e.g., show error message to user)
-      } else {
-        console.error("Error deleting task:", error);
-        // Handle other errors
-      }
     }
   }
 

@@ -141,37 +141,25 @@ export async function getServerSideProps(context) {
     };
   }
 
-  try {
-    const response = await Promise.race([
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`, {
-        headers: {
-          Cookie: context.req.headers.cookie,
-        },
-      }),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Request timeout")), 5000)
-      ),
-    ]);
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user settings");
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`,
+    {
+      headers: {
+        Cookie: context.req.headers.cookie,
+      },
     }
-
-    const userSettings = await response.json();
-    const initialTheme = userSettings.theme || "emerald";
-
-    return {
-      props: {
-        initialTheme,
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching user settings:", error);
-    return {
-      props: {
-        initialTheme: "emerald",
-        error: "Failed to load user settings. Please try again later.",
-      },
-    };
+  );
+  if (!response.ok) {
+    console.error("Failed to fetch user settings");
+    return { props: { initialTheme: "emerald" } };
   }
+  const userSettings = await response.json();
+
+  const initialTheme = userSettings.theme || "emerald";
+
+  return {
+    props: {
+      initialTheme,
+    },
+  };
 }
