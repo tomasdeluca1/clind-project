@@ -151,7 +151,7 @@ export default function Home({ initialTasks }) {
           mind
         </p>
         <TaskInput onAddTask={handleAddTask} />
-        <div className="flex flex-col md:flex-row mt-8 gap-6">
+        <div className="flex flex-col-reverse md:flex-row mt-8 gap-6">
           <div className="w-full md:w-3/5">
             <h2 className="text-xl font-semibold mb-2">Today&#39;s tasks</h2>
             <TaskList
@@ -161,8 +161,8 @@ export default function Home({ initialTasks }) {
               priorityTasks={priorityTasks}
             />
           </div>
-          <div className="w-full md:w-2/5">
-            <div className="mb-8">
+          <div className="w-full md:w-2/5 flex flex-col-reverse md:flex-col gap-6">
+            <div>
               <h2 className="text-xl font-semibold mb-2">Top 3 Priorities</h2>
               <PriorityTasks
                 tasks={priorityTasks.slice(0, 3)}
