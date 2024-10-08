@@ -1,30 +1,9 @@
 import "../styles/globals.css";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import Layout from "@/components/Layout";
-import { useEffect } from "react";
 import Head from "next/head";
 
-function MyApp({ Component, pageProps }) {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const fetchUserTheme = async () => {
-        try {
-          const response = await fetch("/api/user-settings");
-          if (response.ok) {
-            const { theme } = await response.json();
-            document.documentElement.setAttribute("data-theme", theme);
-          } else {
-            document.documentElement.setAttribute("data-theme", "emerald");
-          }
-        } catch (error) {
-          console.error("Error fetching user theme:", error);
-          document.documentElement.setAttribute("data-theme", "emerald");
-        }
-      };
-
-      fetchUserTheme();
-    }
-  }, []);
+function MyApp({ Component, pageProps, initialTheme }) {
   return (
     <>
       <Head>
@@ -83,6 +62,30 @@ function MyApp({ Component, pageProps }) {
       </UserProvider>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  let initialTheme = "emerald";
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`,
+      {
+        headers: context.req.headers,
+      }
+    );
+    if (response.ok) {
+      const { theme } = await response.json();
+      initialTheme = theme;
+    }
+  } catch (error) {
+    console.error("Error fetching user theme:", error);
+  }
+
+  return {
+    props: {
+      initialTheme,
+    },
+  };
 }
 
 export default MyApp;
