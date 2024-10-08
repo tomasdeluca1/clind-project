@@ -3,10 +3,10 @@ import { useState } from "react";
 import { capitalize } from "../utils/functions";
 
 export default function TaskList({
-  tasks,
+  tasks = [],
   onUpdateTask,
   onDeleteTask,
-  priorityTasks,
+  priorityTasks = [],
 }) {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
@@ -29,11 +29,15 @@ export default function TaskList({
     onUpdateTask(task._id, { isCompleted: !task.isCompleted });
   }
 
-  return tasks.length === 0 ? (
-    <div className="text-base-content/50">
-      Add some tasks and clear your mind!
-    </div>
-  ) : (
+  if (!tasks || tasks.length === 0) {
+    return (
+      <div className="text-base-content/50">
+        Add some tasks and clear your mind!
+      </div>
+    );
+  }
+
+  return (
     <ul className="space-y-2">
       {tasks.map((task) => (
         <li
