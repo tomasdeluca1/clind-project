@@ -47,7 +47,7 @@ export default function UserCalendar({ initialTasks }) {
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-2">Mind Break Calendar</h1>
       <p className="text-lg text-base-content/70 mb-6">
-        Clear your mind, boost your output, and tap into your brain's hidden
+        Clear your mind, boost your output, and tap into your brain&#39;s hidden
         power
       </p>
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
