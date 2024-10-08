@@ -54,7 +54,10 @@ function MyApp({ Component, pageProps, initialTheme }) {
           name="twitter:description"
           content="Streamline your thoughts, boost productivity, and achieve peace of mind with Clind's task management app."
         />
-        <meta name="twitter:image" content="/og-image-clind.png" />
+        <meta
+          name="twitter:image"
+          content="https://www.clind.site/og-image-clind.png"
+        />
         <link rel="canonical" href="https://www.clind.site" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
