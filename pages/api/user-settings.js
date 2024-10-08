@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../../lib/mongodb";
+import clientPromise from "@/lib/mongodb";
 import { getSession } from "@auth0/nextjs-auth0";
 
 export default async function handler(req, res) {
@@ -9,7 +9,8 @@ export default async function handler(req, res) {
   }
 
   const userId = session.user.sub;
-  const db = await connectToDatabase();
+  const client = await clientPromise;
+  const db = client.db("clind-project");
   const collection = db.collection("users");
   switch (req.method) {
     case "GET":

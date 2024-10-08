@@ -1,6 +1,7 @@
-import { connectToDatabase, getUserCollection } from "../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import { getSession } from "@auth0/nextjs-auth0";
+import { getUserCollection } from "@/utils/functions";
+import clientPromise from "@/lib/mongodb";
 
 export default async function handler(req, res) {
   const session = await getSession(req, res);
@@ -11,14 +12,8 @@ export default async function handler(req, res) {
   const { method, body, query } = req;
   const userId = session.user.sub;
 
-  let db;
-  try {
-    db = await connectToDatabase();
-  } catch (error) {
-    console.error("Database connection error:", error);
-    return res.status(500).json({ error: "Unable to connect to database" });
-  }
-
+  const client = await clientPromise;
+  const db = client.db("clind-project");
   const collection = db.collection(getUserCollection(userId));
 
   switch (method) {
