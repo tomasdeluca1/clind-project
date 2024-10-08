@@ -2,8 +2,9 @@ import { ObjectId } from "mongodb";
 import { getSession } from "@auth0/nextjs-auth0";
 import { getUserCollection } from "@/utils/functions";
 import clientPromise from "@/lib/mongodb";
+import { withApiCache } from "@/lib/withApiCache";
 
-export default async function handler(req, res) {
+export default withApiCache(async function handler(req, res) {
   const session = await getSession(req, res);
   if (!session || !session.user) {
     return res.status(401).json({ error: "Not authenticated" });
@@ -19,8 +20,25 @@ export default async function handler(req, res) {
   switch (method) {
     case "GET":
       try {
-        const tasks = await collection.find({}).limit(100).toArray(); // Limit to 100 tasks
-        res.status(200).json(tasks);
+        const page = parseInt(query.page) || 1;
+        const limit = parseInt(query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const tasks = await collection
+          .find({})
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .toArray();
+
+        const total = await collection.countDocuments({});
+
+        res.status(200).json({
+          tasks,
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalTasks: total,
+        });
       } catch (error) {
         console.error("Error fetching tasks:", error);
         res.status(500).json({ error: "Error fetching tasks" });
@@ -80,4 +98,4 @@ export default async function handler(req, res) {
       res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
-}
+});
