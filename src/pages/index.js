@@ -7,6 +7,7 @@ import CompletedTasks from "@/components/CompletedTasks";
 import LandingPage from "@/components/LandingPage";
 import { getSession } from "@auth0/nextjs-auth0";
 import Head from "next/head";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Home({ initialTasks }) {
   const { user, isLoading } = useUser();
@@ -86,7 +87,7 @@ export default function Home({ initialTasks }) {
     (task) => !task.isPriority && !task.isCompleted
   );
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner />;
 
   if (!user) return <LandingPage />;
 

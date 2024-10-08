@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { capitalize } from "@/utils/functions";
 import { getSession } from "@auth0/nextjs-auth0";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const themes = [
   "lofi",
@@ -38,7 +39,7 @@ export default function UserSettings({ initialTheme }) {
     document.documentElement.setAttribute("data-theme", currentTheme);
   }, [currentTheme]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <div>{error.message}</div>;
   if (!user) {
     router.push("/api/auth/login");

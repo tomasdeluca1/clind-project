@@ -2,11 +2,12 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import Link from "next/link";
 import { ListStart } from "lucide-react";
 import Image from "next/image";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function Layout({ children }) {
   const { user, error, isLoading } = useUser();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <div>{error.message}</div>;
 
   return (
