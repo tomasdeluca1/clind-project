@@ -1,8 +1,8 @@
 "use client";
 import clientPromise from "@/lib/mongodb";
-import { getSession } from "@auth0/nextjs-auth0";
+import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 
-export default async function handler(req, res) {
+export default withApiAuthRequired(async function handler(req, res) {
   const session = await getSession(req, res);
 
   if (!session || !session.user) {
@@ -34,4 +34,4 @@ export default async function handler(req, res) {
       res.status(405).end();
       break;
   }
-}
+});

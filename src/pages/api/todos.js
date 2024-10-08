@@ -1,10 +1,10 @@
 "use client";
 import clientPromise from "@/lib/mongodb";
-import { getSession } from "@auth0/nextjs-auth0";
+import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 
 import { ObjectId } from "mongodb";
 
-export default async function handler(req, res) {
+export default withApiAuthRequired(async function handler(req, res) {
   const session = await getSession(req, res);
   if (!session) {
     return res.status(401).json({ error: "Not authenticated" });
@@ -57,4 +57,4 @@ export default async function handler(req, res) {
     res.setHeader("Allow", ["GET", "POST", "PUT"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-}
+});
