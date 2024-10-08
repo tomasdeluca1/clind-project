@@ -1,26 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import TaskInput from "components/TaskInput";
 import TaskList from "components/TaskList";
 import PriorityTasks from "components/PriorityTasks";
 import CompletedTasks from "components/CompletedTasks";
 import LandingPage from "components/LandingPage";
+import { getSession } from "@auth0/nextjs-auth0";
 
-export default function Home() {
+export default function Home({ initialTasks }) {
   const { user, isLoading } = useUser();
-  const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    if (user) {
-      fetchTasks();
-    }
-  }, [user]);
-
-  async function fetchTasks() {
-    const response = await fetch("/api/tasks");
-    const data = await response.json();
-    setTasks(data);
-  }
+  const [tasks, setTasks] = useState(initialTasks);
 
   async function handleAddTask(text) {
     const response = await fetch("/api/tasks", {
@@ -39,7 +28,10 @@ export default function Home() {
       body: JSON.stringify({ id, ...updateData }),
     });
     if (response.ok) {
-      fetchTasks();
+      const updatedTasks = tasks.map((task) =>
+        task._id === id ? { ...task, ...updateData } : task
+      );
+      setTasks(updatedTasks);
     }
   }
 
@@ -50,7 +42,8 @@ export default function Home() {
       body: JSON.stringify({ id }),
     });
     if (response.ok) {
-      fetchTasks();
+      const updatedTasks = tasks.filter((task) => task._id !== id);
+      setTasks(updatedTasks);
     }
   }
 
@@ -103,4 +96,30 @@ export default function Home() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const { req, res } = context;
+  const session = await getSession(req, res);
+
+  if (!session || !session.user) {
+    return {
+      props: {
+        initialTasks: [],
+      },
+    };
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
+    headers: {
+      Cookie: req.headers.cookie,
+    },
+  });
+  const initialTasks = await response.json();
+
+  return {
+    props: {
+      initialTasks,
+    },
+  };
 }
