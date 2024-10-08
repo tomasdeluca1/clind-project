@@ -4,7 +4,7 @@ import { getUserCollection } from "@/utils/functions";
 import { connectToDatabase } from "@/lib/mongodb";
 import { withApiCache } from "@/lib/withApiCache";
 
-export default withApiCache(async function handler(req, res) {
+async function handler(req, res) {
   try {
     const session = await getSession(req, res);
     if (!session || !session.user) {
@@ -102,4 +102,6 @@ export default withApiCache(async function handler(req, res) {
     console.error("Unhandled error in API route:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
+}
+
+export default withApiCache(handler);
