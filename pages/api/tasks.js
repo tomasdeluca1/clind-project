@@ -4,21 +4,31 @@ import { getSession } from "@auth0/nextjs-auth0";
 
 export default async function handler(req, res) {
   const session = await getSession(req, res);
+  if (!session || !session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
   const { method, body, query } = req;
   const userId = session.user.sub;
 
-  const db = await connectToDatabase();
+  let db;
+  try {
+    db = await connectToDatabase();
+  } catch (error) {
+    console.error("Database connection error:", error);
+    return res.status(500).json({ error: "Unable to connect to database" });
+  }
+
   const collection = db.collection(getUserCollection(userId));
 
   switch (method) {
     case "GET":
       try {
-        const tasks = await collection.find({}).toArray();
+        const tasks = await collection.find({}).limit(100).toArray(); // Limit to 100 tasks
         res.status(200).json(tasks);
       } catch (error) {
-        res
-          .status(500)
-          .json({ message: "Error fetching tasks", error: error.message });
+        console.error("Error fetching tasks:", error);
+        res.status(500).json({ error: "Error fetching tasks" });
       }
       break;
 
@@ -33,48 +43,41 @@ export default async function handler(req, res) {
         const result = await collection.insertOne(newTask);
         res.status(201).json({ ...newTask, _id: result.insertedId });
       } catch (error) {
-        res
-          .status(500)
-          .json({ message: "Error creating task", error: error.message });
+        console.error("Error creating task:", error);
+        res.status(500).json({ error: "Error creating task" });
       }
       break;
 
     case "PUT":
       try {
         const { id, ...updateData } = body;
-        if (updateData.status === "archived") {
-          await collection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: { status: "archived", archivedAt: new Date() } }
-          );
+        const result = await collection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { ...updateData, updatedAt: new Date() } }
+        );
+        if (result.modifiedCount === 1) {
+          res.status(200).json({ message: "Task updated successfully" });
         } else {
-          await collection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: updateData }
-          );
+          res.status(404).json({ error: "Task not found" });
         }
-        res.status(200).json({ message: "Task updated successfully" });
       } catch (error) {
-        res
-          .status(500)
-          .json({ message: "Error updating task", error: error.message });
+        console.error("Error updating task:", error);
+        res.status(500).json({ error: "Error updating task" });
       }
       break;
 
     case "DELETE":
       try {
         const { id } = body;
-        console.log("Deleting task with ID:", id);
         const result = await collection.deleteOne({ _id: new ObjectId(id) });
         if (result.deletedCount === 1) {
           res.status(200).json({ message: "Task deleted successfully" });
         } else {
-          res.status(404).json({ message: "Task not found" });
+          res.status(404).json({ error: "Task not found" });
         }
       } catch (error) {
-        res
-          .status(500)
-          .json({ message: "Error deleting task", error: error.message });
+        console.error("Error deleting task:", error);
+        res.status(500).json({ error: "Error deleting task" });
       }
       break;
 
