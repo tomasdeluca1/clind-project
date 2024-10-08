@@ -4,8 +4,6 @@ const uri = process.env.MONGODB_URI;
 const options = {
   useUnifiedTopology: true,
   useNewUrlParser: true,
-  connectTimeoutMS: 5000, // 5 seconds
-  socketTimeoutMS: 30000, // 30 seconds
 };
 
 let client;
@@ -29,14 +27,3 @@ if (process.env.NODE_ENV === "development") {
 // Export a module-scoped MongoClient promise. By doing this in a
 // separate module, the client can be shared across functions.
 export default clientPromise;
-
-export async function connectToDatabase() {
-  try {
-    const client = await clientPromise;
-    const db = client.db("clind-project");
-    return { client, db };
-  } catch (error) {
-    console.error("Failed to connect to the database", error);
-    throw new Error("Database connection failed");
-  }
-}

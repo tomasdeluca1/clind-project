@@ -16,6 +16,7 @@ export default withApiAuthRequired(async function handler(req, res) {
   switch (req.method) {
     case "GET":
       const settings = await collection.findOne({ auth0Id: userId });
+      console.log(settings);
       res.status(200).json(settings || { userId, theme: "emerald" });
       break;
 
