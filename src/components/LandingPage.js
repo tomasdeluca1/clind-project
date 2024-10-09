@@ -29,11 +29,25 @@ export default function LandingPage() {
               Start Clearing Your Mind
             </Link>
           </div>
-          <div className="bg-base-300 p-4 rounded-lg shadow-lg">
-            <p className="text-center text-base-content/70 italic">
-              Video tutorial coming soon!
-            </p>
-            {/* Add your video component here */}
+          <div className="bg-base-200 p-6 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <h3 className="text-xl font-semibold mb-4 text-center">
+              Clear Your Mind: Quick Tutorial
+            </h3>
+            <div className="relative aspect-video">
+              <iframe
+                src="https://www.youtube.com/embed/mu5OVvIrNQM"
+                title="Clind Tutorial Video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full rounded-lg"
+                loading="lazy"
+              ></iframe>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none flex items-center justify-center opacity-0 transition-opacity duration-300 hover:opacity-100">
+                <span className="text-white text-lg font-semibold bg-primary px-4 py-2 rounded-full shadow-md">
+                  Watch Tutorial
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
