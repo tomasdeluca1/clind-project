@@ -5,29 +5,63 @@ import TaskList from "@/components/TaskList";
 import PriorityTasks from "@/components/PriorityTasks";
 import CompletedTasks from "@/components/CompletedTasks";
 import LandingPage from "@/components/LandingPage";
+import UnfinishedTasksModal from "@/components/UnfinishedTasksModal";
 import { getSession } from "@auth0/nextjs-auth0";
 import Head from "next/head";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
-export default function Home({ initialTasks }) {
+export default function Home({ initialTasks, lastLoginDate }) {
   const { user, isLoading } = useUser();
   const [tasks, setTasks] = useState([]);
   const [uncompletedTasks, setUncompletedTasks] = useState([]);
+  const [showUnfinishedModal, setShowUnfinishedModal] = useState(false);
 
   useEffect(() => {
-    const today = new Date().toDateString();
-    const storedDate = localStorage.getItem("lastVisitDate");
+    if (user && initialTasks) {
+      const today = new Date().toISOString().split("T")[0];
+      const storedDate = lastLoginDate
+        ? new Date(lastLoginDate).toISOString().split("T")[0]
+        : null;
 
-    if (storedDate !== today) {
-      // It's a new day, start with an empty board
-      setTasks([]);
-      setUncompletedTasks(initialTasks.filter((task) => !task.isCompleted));
-      localStorage.setItem("lastVisitDate", today);
-    } else {
-      // It's the same day, use initialTasks
-      setTasks(initialTasks);
+      if (storedDate !== today) {
+        // It's a new day, show the modal with uncompleted tasks
+        const unfinishedTasks = initialTasks.filter(
+          (task) => !task.isCompleted
+        );
+        if (unfinishedTasks.length > 0) {
+          setUncompletedTasks(unfinishedTasks);
+          setShowUnfinishedModal(true);
+        } else {
+          setTasks([]);
+        }
+        // Update the user's last login date
+        updateUserLastLogin(user.sub, today);
+      } else {
+        // It's the same day, use initialTasks
+        setTasks(initialTasks);
+      }
     }
-  }, [initialTasks]);
+  }, [user, initialTasks, lastLoginDate]);
+
+  const updateUserLastLogin = async (userId, date) => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/lastLogin`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, lastLoginDate: date }),
+      });
+    } catch (error) {
+      console.error("Error updating last login date:", error);
+    }
+  };
+
+  const handleSelectUnfinishedTasks = (selectedTaskIds) => {
+    const selectedTasks = uncompletedTasks.filter((task) =>
+      selectedTaskIds.includes(task._id)
+    );
+    setTasks((prevTasks) => [...prevTasks, ...selectedTasks]);
+    setShowUnfinishedModal(false);
+  };
 
   async function handleAddTask(text) {
     const response = await fetch(
@@ -152,8 +186,8 @@ export default function Home({ initialTasks }) {
           mind
         </p>
         <TaskInput onAddTask={handleAddTask} />
-        <div className="flex flex-col-reverse md:flex-row mt-8 gap-6">
-          <div className="w-full md:w-3/5">
+        <div className="flex flex-col-reverse lg:flex-row mt-8 gap-6">
+          <div className="w-full lg:w-3/5">
             <h2 className="text-xl font-semibold mb-2">Today&#39;s tasks</h2>
             <TaskList
               tasks={nonPriorityTasks}
@@ -162,7 +196,7 @@ export default function Home({ initialTasks }) {
               priorityTasks={priorityTasks}
             />
           </div>
-          <div className="w-full md:w-2/5 flex flex-col-reverse md:flex-col gap-6">
+          <div className="w-full lg:w-2/5 flex flex-col-reverse lg:flex-col gap-6">
             <div>
               <h2 className="text-xl font-semibold mb-2">Top 3 Priorities</h2>
               <PriorityTasks
@@ -181,6 +215,13 @@ export default function Home({ initialTasks }) {
           </div>
         </div>
       </div>
+      {showUnfinishedModal && (
+        <UnfinishedTasksModal
+          tasks={uncompletedTasks}
+          onClose={() => setShowUnfinishedModal(false)}
+          onSelectTasks={handleSelectUnfinishedTasks}
+        />
+      )}
     </>
   );
 }
@@ -193,39 +234,47 @@ export async function getServerSideProps(context) {
     return {
       props: {
         initialTasks: [],
+        lastLoginDate: null,
       },
     };
   }
 
   try {
-    const response = await Promise.race([
+    const [tasksResponse, userResponse] = await Promise.all([
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
         headers: {
           Cookie: req.headers.cookie,
         },
       }),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Request timeout")), 5000)
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users/${session.user.sub}`,
+        {
+          headers: {
+            Cookie: req.headers.cookie,
+          },
+        }
       ),
     ]);
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch tasks");
+    if (!tasksResponse.ok || !userResponse.ok) {
+      throw new Error("Failed to fetch data");
     }
 
-    const initialTasks = await response.json();
-
+    const initialTasks = await tasksResponse.json();
+    const userData = await userResponse.json();
     return {
       props: {
         initialTasks,
+        lastLoginDate: userData.lastLoginDate || null,
       },
     };
   } catch (error) {
-    console.error("Error fetching tasks:", error);
+    console.error("Error fetching data:", error);
     return {
       props: {
         initialTasks: [],
-        error: "Failed to load tasks. Please try again later.",
+        lastLoginDate: null,
+        error: "Failed to load data. Please try again later.",
       },
     };
   }

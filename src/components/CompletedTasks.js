@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronRight, Trash, XCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CompletedTasks({ tasks, onUpdateTask, onDeleteTask }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -11,7 +12,12 @@ export default function CompletedTasks({ tasks, onUpdateTask, onDeleteTask }) {
   }
 
   return (
-    <div className="mt-8">
+    <motion.div
+      className="mt-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <h2
         className="text-xl font-semibold mb-2 cursor-pointer flex items-center"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -26,34 +32,46 @@ export default function CompletedTasks({ tasks, onUpdateTask, onDeleteTask }) {
           />
         </span>
       </h2>
-      {isExpanded && (
-        <ul className="space-y-2">
-          {completedTasks.map((task) => (
-            <li
-              key={task._id}
-              className="flex items-center justify-between bg-success/20 text-base-content p-2 rounded"
-            >
-              <span className="line-through">{task.text}</span>
-              <div className="flex items-center">
-                <button
-                  onClick={() => handleUncomplete(task)}
-                  className="btn btn-sm btn-ghost text-success mr-2 tooltip"
-                  data-tip="Mark as incomplete"
-                >
-                  <XCircle />
-                </button>
-                <button
-                  onClick={() => onDeleteTask(task._id)}
-                  className="btn btn-sm btn-ghost text-error tooltip"
-                  data-tip="Delete task"
-                >
-                  <Trash />
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.ul
+            className="space-y-2"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {completedTasks.map((task) => (
+              <motion.li
+                key={task._id}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center justify-between bg-success/20 text-base-content p-2 rounded"
+              >
+                <span className="line-through">{task.text}</span>
+                <div className="flex items-center">
+                  <button
+                    onClick={() => handleUncomplete(task)}
+                    className="btn btn-sm btn-ghost text-success mr-2 tooltip"
+                    data-tip="Mark as incomplete"
+                  >
+                    <XCircle />
+                  </button>
+                  <button
+                    onClick={() => onDeleteTask(task._id)}
+                    className="btn btn-sm btn-ghost text-error tooltip"
+                    data-tip="Delete task"
+                  >
+                    <Trash />
+                  </button>
+                </div>
+              </motion.li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { capitalize } from "@/utils/functions";
 import { getSession } from "@auth0/nextjs-auth0";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { motion } from "framer-motion";
 
 const themes = [
   "lofi",
@@ -72,11 +73,21 @@ export default function UserSettings({ initialTheme }) {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <motion.div
+      className="container mx-auto p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <h1 className="text-3xl font-bold mb-6 text-center">
         Choose the perfect theme!
       </h1>
-      <div className="mb-6">
+      <motion.div
+        className="mb-6"
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
         <div className="md:flex md:space-x-8">
           <div className="md:w-1/2">
             <h3 className="text-xl font-medium mb-2">Light Themes</h3>
@@ -187,11 +198,17 @@ export default function UserSettings({ initialTheme }) {
             </div>
           </div>
         </div>
-      </div>
-      <Link href="/" className="btn btn-primary">
-        Back to Home
-      </Link>
-    </div>
+      </motion.div>
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
+        <Link href="/" className="btn btn-primary">
+          Back to Home
+        </Link>
+      </motion.div>
+    </motion.div>
   );
 }
 

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { getSession } from "@auth0/nextjs-auth0";
 import CustomToolbar from "@/components/CustomToolbar";
 import CustomDateHeader from "@/components/CustomDateHeader";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
@@ -44,62 +45,84 @@ export default function UserCalendar({ initialTasks }) {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-2">Mind Break Calendar</h1>
-      <p className="text-lg text-base-content/70 mb-6">
-        Clear your mind, boost your output, and tap into your brain&#39;s hidden
-        power
-      </p>
-      <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: "75vh", maxHeight: 800 }}
-          onSelectEvent={handleSelectEvent}
-          onSelectSlot={handleSelectSlot}
-          selectable
-          className="text-base-content"
-          views={["month", "week", "day"]}
-          defaultView="month"
-          toolbar={true}
-          popup
-          eventPropGetter={(event) => ({
-            className: `bg-primary/90 text-primary-content rounded-lg p-2 shadow-md transition-all duration-300 hover:bg-primary ${
-              event.resource.isPriority ? "border-l-4 border-accent" : ""
-            }`,
-          })}
-          dayPropGetter={(date) => ({
-            className: "hover:bg-base-200 transition-colors duration-300",
-          })}
-          components={{
-            toolbar: CustomToolbar,
-            month: { dateHeader: CustomDateHeader },
-          }}
-          formats={{
-            timeGutterFormat: () => {},
-            dayFormat: "ddd",
-            dayRangeHeaderFormat: ({ start, end }) =>
-              `${moment(start).format("MMM D")} - ${moment(end).format(
-                "MMM D"
-              )}`,
-          }}
-          allDayAccessor={() => true}
-          showAllEvents
-        />
-      </div>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        {selectedDate && (
-          <div className="bg-base-100 p-4 md:p-6 rounded-xl md:h-auto pb-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-primary">
-              {moment(selectedDate).format("MMMM D, YYYY")}
-            </h2>
-            <DaySummary summary={getDaySummary(selectedDate)} />
-          </div>
+    <>
+      <AnimatePresence>
+        {isModalOpen && (
+          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            {selectedDate && (
+              <motion.div
+                className="bg-base-100 p-4 md:p-6 rounded-xl md:h-screen pb-10"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-primary">
+                  {moment(selectedDate).format("MMMM D, YYYY")}
+                </h2>
+                <DaySummary summary={getDaySummary(selectedDate)} />
+              </motion.div>
+            )}
+          </Modal>
         )}
-      </Modal>
-    </div>
+      </AnimatePresence>
+      <motion.div
+        className="container mx-auto p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-3xl font-bold mb-2">Mind Break Calendar</h1>
+        <p className="text-lg text-base-content/70 mb-6">
+          Clear your mind, boost your output, and tap into your brain&#39;s
+          hidden power
+        </p>
+        <motion.div
+          className="bg-base-100 p-6 rounded-xl shadow-lg"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: "75vh", maxHeight: 800 }}
+            onSelectEvent={handleSelectEvent}
+            onSelectSlot={handleSelectSlot}
+            selectable
+            className="text-base-content"
+            views={["month", "week", "day"]}
+            defaultView="month"
+            toolbar={true}
+            popup
+            eventPropGetter={(event) => ({
+              className: `bg-primary/90 text-primary-content rounded-lg p-2 shadow-md transition-all duration-300 hover:bg-primary ${
+                event.resource.isPriority ? "border-l-4 border-accent" : ""
+              }`,
+            })}
+            dayPropGetter={(date) => ({
+              className: "hover:bg-base-200 transition-colors duration-300",
+            })}
+            components={{
+              toolbar: CustomToolbar,
+              month: { dateHeader: CustomDateHeader },
+            }}
+            formats={{
+              timeGutterFormat: () => {},
+              dayFormat: "ddd",
+              dayRangeHeaderFormat: ({ start, end }) =>
+                `${moment(start).format("MMM D")} - ${moment(end).format(
+                  "MMM D"
+                )}`,
+            }}
+            allDayAccessor={() => true}
+            showAllEvents
+          />
+        </motion.div>
+      </motion.div>
+    </>
   );
 }
 

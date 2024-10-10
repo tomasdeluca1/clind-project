@@ -1,35 +1,52 @@
 import { CheckCircle, List, Target } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-16">
-        <header className="text-center mb-16">
+        <motion.header
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <h1 className="text-5xl font-bold mb-4">
             Welcome to <span className="text-primary">Clind</span>
           </h1>
           <p className="text-xl text-base-content/70">
             Clear Tasks, Clean Mind
           </p>
-        </header>
+        </motion.header>
 
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <h2 className="text-3xl font-semibold mb-6">
-              Declutter Your Mind, One Task at a Time
+              Simplify Your Life, Task by Task
             </h2>
             <p className="text-lg mb-6">
-              Clind combines &quot;cl&quot; from &quot;clean&quot; and
-              &quot;ind&quot; from &quot;mind&quot; to help you achieve mental
-              clarity. Dump your tasks, prioritize effortlessly, and focus on
-              what truly matters.
+              Clind: Where clarity meets productivity. Effortlessly organize,
+              prioritize, and focus on what truly matters. Experience the power
+              of a decluttered mind.
             </p>
-            <Link href="/api/auth/login" className="btn btn-primary btn-lg">
+            <Link
+              href="/api/auth/login"
+              className="btn btn-primary text-white btn-lg"
+            >
               Start Clearing Your Mind
             </Link>
-          </div>
-          <div className="bg-base-200 p-6 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+          </motion.div>
+          <motion.div
+            className="bg-base-200 p-6 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             <h3 className="text-xl font-semibold mb-4 text-center">
               Clear Your Mind: Quick Tutorial
             </h3>
@@ -48,10 +65,15 @@ export default function LandingPage() {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <motion.div
+          className="grid md:grid-cols-3 gap-8 mb-16"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
           <FeatureCard
             icon={<List className="w-12 h-12 text-primary" />}
             title="Brain Dump"
@@ -67,9 +89,14 @@ export default function LandingPage() {
             title="Sense of Achievement"
             description="Mark tasks as complete and watch your productivity soar. Celebrate the small wins that lead to big results."
           />
-        </div>
+        </motion.div>
 
-        <div className="text-center">
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
           <h2 className="text-3xl font-semibold mb-6">
             Ready to Experience Mental Clarity?
           </h2>
@@ -77,10 +104,13 @@ export default function LandingPage() {
             Join Clind today and transform the way you manage your tasks and
             thoughts.
           </p>
-          <Link href="/api/auth/login" className="btn btn-primary btn-lg">
+          <Link
+            href="/api/auth/login"
+            className="btn btn-primary text-white btn-lg"
+          >
             Get Started for Free
           </Link>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
@@ -88,10 +118,14 @@ export default function LandingPage() {
 
 function FeatureCard({ icon, title, description }) {
   return (
-    <div className="bg-base-200 p-6 rounded-lg shadow-md">
+    <motion.div
+      className="bg-base-200 p-6 rounded-lg shadow-md"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
       <div className="flex justify-center mb-4">{icon}</div>
       <h3 className="text-xl font-semibold mb-2 text-center">{title}</h3>
       <p className="text-base-content/70 text-center">{description}</p>
-    </div>
+    </motion.div>
   );
 }
