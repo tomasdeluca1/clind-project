@@ -47,7 +47,10 @@ function MyApp({ Component, pageProps, initialTheme }) {
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.clind.site" />
-        <meta property="og:image" content="/og-image-clind.png" />
+        <meta
+          property="og:image"
+          content="https://www.clind.site/og-image-clind.png"
+        />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Clind - Clear Tasks, Clean Mind" />
         <meta
