@@ -6,6 +6,7 @@ import { capitalize } from "@/utils/functions";
 import { getSession } from "@auth0/nextjs-auth0";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { motion } from "framer-motion";
+import { withAuth } from "@/utils/with-auth";
 
 const themes = [
   "lofi",
@@ -30,7 +31,7 @@ const themes = [
   //   "luxury",
 ];
 
-export default function UserSettings({ initialTheme }) {
+function SettingsPage({ initialTheme }) {
   const { user, error, isLoading } = useUser();
   const [currentTheme, setCurrentTheme] = useState(initialTheme);
   const router = useRouter();
@@ -245,3 +246,5 @@ export async function getServerSideProps(context) {
     },
   };
 }
+
+export default withAuth(SettingsPage);
