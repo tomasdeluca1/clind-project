@@ -87,7 +87,7 @@ export default function LandingPage() {
                 className="w-full h-full"
                 loading="lazy"
               ></iframe>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-300">
+              {/* <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-300">
                 <motion.span
                   className="px-6 py-3 sm:px-8 sm:py-4 bg-primary text-white rounded-full font-bold shadow-xl flex items-center gap-2 sm:gap-3 text-base sm:text-xl"
                   whileHover={{ scale: 1.05 }}
@@ -95,7 +95,7 @@ export default function LandingPage() {
                 >
                   Watch Demo
                 </motion.span>
-              </div>
+              </div> */}
             </div>
           </motion.div>
         </div>

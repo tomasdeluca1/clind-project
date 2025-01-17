@@ -8,15 +8,28 @@ function MyApp({ Component, pageProps, initialTheme }) {
   useEffect(() => {
     const setUserTheme = async () => {
       if (typeof window !== "undefined") {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`
-        );
-        if (response.ok) {
-          const { theme } = await response.json();
-          document.documentElement.setAttribute("data-theme", theme);
-          localStorage.setItem("theme", theme);
-        } else {
-          // Fallback to initialTheme if user settings can't be fetched
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+          if (response.ok) {
+            const { theme } = await response.json();
+            document.documentElement.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+          } else {
+            // Fallback to initialTheme if user settings can't be fetched
+            document.documentElement.setAttribute("data-theme", "emerald");
+            localStorage.setItem("theme", "emerald");
+          }
+        } catch (error) {
+          console.error("Error fetching theme:", error);
           document.documentElement.setAttribute("data-theme", "emerald");
           localStorage.setItem("theme", "emerald");
         }
