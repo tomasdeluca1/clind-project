@@ -21,6 +21,23 @@ export default async function handler(req, res) {
   const db = client.db();
 
   try {
+    const existingUser = await db
+      .collection("users")
+      .findOne({ auth0Id: userId });
+
+    if (!existingUser) {
+      await Promise.all([
+        db.collection("users").insertOne({
+          auth0Id: userId,
+          name: session.user.name,
+          email: session.user.email,
+          lastLoginDate: new Date(lastLoginDate),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }),
+        await sendNotifyMeNotification(),
+      ]);
+    }
     const result = await db.collection("users").updateOne(
       { auth0Id: userId },
       {

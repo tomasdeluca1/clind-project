@@ -6,6 +6,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import { motion } from "framer-motion";
 import Footer from "./Footer";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { sendNotifyMeNotification } from "@/utils/functions";
 
 export default function Layout({ children }) {
   const { user, error, isLoading } = useUser();
