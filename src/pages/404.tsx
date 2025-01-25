@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Home } from "lucide-react";
 
-export default function Custom404() {
+export default function Custom404(): JSX.Element {
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-100">
       <div className="text-center">

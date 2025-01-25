@@ -9,11 +9,18 @@ import UnfinishedTasksModal from "@/components/UnfinishedTasksModal";
 import { getSession } from "@auth0/nextjs-auth0";
 import Head from "next/head";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { Task, TaskUpdate } from "@/types";
 
-export default function Home({ initialTasks, lastLoginDate }) {
+export default function Home({
+  initialTasks,
+  lastLoginDate,
+}: {
+  initialTasks: Task[];
+  lastLoginDate: string | null;
+}) {
   const { user, isLoading } = useUser();
-  const [tasks, setTasks] = useState([]);
-  const [uncompletedTasks, setUncompletedTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
   const [showUnfinishedModal, setShowUnfinishedModal] = useState(false);
 
   useEffect(() => {
@@ -26,7 +33,7 @@ export default function Home({ initialTasks, lastLoginDate }) {
       if (storedDate !== today) {
         // It's a new day, show the modal with uncompleted tasks
         const unfinishedTasks = initialTasks.filter(
-          (task) => !task.isCompleted
+          (task: Task) => !task.isCompleted
         );
         if (unfinishedTasks.length > 0) {
           setUncompletedTasks(unfinishedTasks);
@@ -35,7 +42,7 @@ export default function Home({ initialTasks, lastLoginDate }) {
           setTasks([]);
         }
         // Update the user's last login date
-        updateUserLastLogin(user.sub, today);
+        updateUserLastLogin(user.sub || "", today);
       } else {
         // It's the same day, use initialTasks
         setTasks(initialTasks);
@@ -43,7 +50,7 @@ export default function Home({ initialTasks, lastLoginDate }) {
     }
   }, [user, initialTasks, lastLoginDate]);
 
-  const updateUserLastLogin = async (userId, date) => {
+  const updateUserLastLogin = async (userId: string, date: string) => {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/lastLogin`, {
         method: "PUT",
@@ -55,15 +62,15 @@ export default function Home({ initialTasks, lastLoginDate }) {
     }
   };
 
-  const handleSelectUnfinishedTasks = (selectedTaskIds) => {
+  const handleSelectUnfinishedTasks = (selectedTaskIds: string[]) => {
     const selectedTasks = uncompletedTasks.filter((task) =>
-      selectedTaskIds.includes(task._id)
+      selectedTaskIds.includes(task._id?.toString() || "")
     );
     setTasks((prevTasks) => [...prevTasks, ...selectedTasks]);
     setShowUnfinishedModal(false);
   };
 
-  async function handleAddTask(text) {
+  async function handleAddTask(text: string) {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
       {
@@ -76,7 +83,7 @@ export default function Home({ initialTasks, lastLoginDate }) {
     setTasks((prevTasks) => [...prevTasks, newTask]);
   }
 
-  async function handleUpdateTask(id, updateData) {
+  async function handleUpdateTask(id: string, updateData: Task) {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
       {
@@ -88,18 +95,18 @@ export default function Home({ initialTasks, lastLoginDate }) {
     if (response.ok) {
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task._id === id ? { ...task, ...updateData } : task
+          task._id?.toString() === id ? { ...task, ...updateData } : task
         )
       );
       if (updateData.isCompleted) {
         setUncompletedTasks((prevTasks) =>
-          prevTasks.filter((task) => task._id !== id)
+          prevTasks.filter((task) => task._id?.toString() !== id)
         );
       }
     }
   }
 
-  async function handleDeleteTask(id) {
+  async function handleDeleteTask(id: string) {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
       {
@@ -109,9 +116,11 @@ export default function Home({ initialTasks, lastLoginDate }) {
       }
     );
     if (response.ok) {
-      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task._id?.toString() !== id)
+      );
       setUncompletedTasks((prevTasks) =>
-        prevTasks.filter((task) => task._id !== id)
+        prevTasks.filter((task) => task._id?.toString() !== id)
       );
     }
   }
@@ -191,7 +200,9 @@ export default function Home({ initialTasks, lastLoginDate }) {
             <h2 className="text-xl font-semibold mb-2">Today&#39;s tasks</h2>
             <TaskList
               tasks={nonPriorityTasks}
-              onUpdateTask={handleUpdateTask}
+              onUpdateTask={(id: string, update: any) =>
+                handleUpdateTask(id, update)
+              }
               onDeleteTask={handleDeleteTask}
               priorityTasks={priorityTasks}
             />
@@ -201,7 +212,9 @@ export default function Home({ initialTasks, lastLoginDate }) {
               <h2 className="text-xl font-semibold mb-2">Top 3 Priorities</h2>
               <PriorityTasks
                 tasks={priorityTasks.slice(0, 3)}
-                onUpdateTask={handleUpdateTask}
+                onUpdateTask={(id: string, update: any) =>
+                  handleUpdateTask(id, update)
+                }
                 onDeleteTask={handleDeleteTask}
               />
             </div>
@@ -226,7 +239,7 @@ export default function Home({ initialTasks, lastLoginDate }) {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context: any) {
   const { req, res } = context;
   const session = await getSession(req, res);
 

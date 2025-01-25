@@ -1,4 +1,4 @@
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, momentLocalizer, View } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import Modal from "@/components/Modal";
@@ -7,16 +7,21 @@ import { getSession } from "@auth0/nextjs-auth0";
 import CustomToolbar from "@/components/CustomToolbar";
 import CustomDateHeader from "@/components/CustomDateHeader";
 import { motion, AnimatePresence } from "framer-motion";
+import { Task } from "@/types";
 
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
 
-export default function UserCalendar({ initialTasks }) {
+export default function UserCalendar({
+  initialTasks,
+}: {
+  initialTasks: Task[];
+}) {
   const [tasks, setTasks] = useState(initialTasks);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const events = tasks.map((task) => ({
+  const events = tasks.map((task: Task) => ({
     title: task.text,
     start: new Date(task.createdAt),
     end: new Date(task.createdAt),
@@ -24,22 +29,22 @@ export default function UserCalendar({ initialTasks }) {
     resource: task,
   }));
 
-  const handleSelectEvent = (event) => {
+  const handleSelectEvent = (event: { start: Date }) => {
     setSelectedDate(event.start);
     setIsModalOpen(true);
   };
 
-  const handleSelectSlot = (slotInfo) => {
+  const handleSelectSlot = (slotInfo: { start: Date }) => {
     setSelectedDate(slotInfo.start);
     setIsModalOpen(true);
   };
 
-  const getDaySummary = (date) => {
-    const dayTasks = tasks.filter((task) =>
+  const getDaySummary = (date: Date) => {
+    const dayTasks = tasks.filter((task: Task) =>
       moment(task.createdAt).isSame(date, "day")
     );
-    const priorityTasks = dayTasks.filter((task) => task.isPriority);
-    const completedTasks = dayTasks.filter((task) => task.isCompleted);
+    const priorityTasks = dayTasks.filter((task: Task) => task.isPriority);
+    const completedTasks = dayTasks.filter((task: Task) => task.isCompleted);
 
     return { dayTasks, priorityTasks, completedTasks };
   };
@@ -83,7 +88,13 @@ export default function UserCalendar({ initialTasks }) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <Calendar
+          <Calendar<{
+            title: string;
+            start: Date;
+            end: Date;
+            allDay: boolean;
+            resource: Task;
+          }>
             localizer={localizer}
             events={events}
             startAccessor="start"
@@ -106,11 +117,11 @@ export default function UserCalendar({ initialTasks }) {
               className: "hover:bg-base-200 transition-colors duration-300",
             })}
             components={{
-              toolbar: CustomToolbar,
+              toolbar: (props: any) => <CustomToolbar {...props} />,
               month: { dateHeader: CustomDateHeader },
             }}
             formats={{
-              timeGutterFormat: () => {},
+              timeGutterFormat: (date: Date) => "",
               dayFormat: "ddd",
               dayRangeHeaderFormat: ({ start, end }) =>
                 `${moment(start).format("MMM D")} - ${moment(end).format(
@@ -126,7 +137,11 @@ export default function UserCalendar({ initialTasks }) {
   );
 }
 
-function DaySummary({ summary }) {
+function DaySummary({
+  summary,
+}: {
+  summary: { dayTasks: Task[]; priorityTasks: Task[]; completedTasks: Task[] };
+}) {
   const { dayTasks, priorityTasks, completedTasks } = summary;
 
   return (
@@ -135,22 +150,35 @@ function DaySummary({ summary }) {
         title="Completed Stuff"
         tasks={completedTasks}
         icon="check-circle"
+        green={true}
       />
       <TaskSection
         title="Top responsabilities"
         tasks={priorityTasks}
         icon="star"
+        green={false}
       />
       <TaskSection
         title="Your mind this day"
         tasks={dayTasks}
         icon="clipboard-list"
+        green={false}
       />
     </div>
   );
 }
 
-function TaskSection({ title, tasks, icon, green }) {
+function TaskSection({
+  title,
+  tasks,
+  icon,
+  green,
+}: {
+  title: string;
+  tasks: Task[];
+  icon: string;
+  green: boolean;
+}) {
   return (
     <section className="bg-base-200 rounded-lg p-4 shadow-md">
       <h3
@@ -166,12 +194,12 @@ function TaskSection({ title, tasks, icon, green }) {
   );
 }
 
-function TaskList({ tasks }) {
+function TaskList({ tasks }: { tasks: Task[] }) {
   return tasks.length > 0 ? (
     <ul className="space-y-2">
-      {tasks.map((task) => (
+      {tasks.map((task: Task) => (
         <li
-          key={task._id}
+          key={task._id?.toString()}
           className="flex items-center bg-base-100 p-2 rounded"
         >
           <span
@@ -194,7 +222,7 @@ function TaskList({ tasks }) {
   );
 }
 
-function Icon({ name, className }) {
+function Icon({ name, className }: { name: string; className: string }) {
   const icons = {
     "clipboard-list": (
       <svg
@@ -246,10 +274,10 @@ function Icon({ name, className }) {
     ),
   };
 
-  return icons[name] || null;
+  return icons[name as keyof typeof icons] || null;
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context: any) {
   const session = await getSession(context.req, context.res);
   if (!session || !session.user) {
     return {

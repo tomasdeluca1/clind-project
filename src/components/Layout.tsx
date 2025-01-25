@@ -6,9 +6,12 @@ import LoadingSpinner from "./LoadingSpinner";
 import { motion } from "framer-motion";
 import Footer from "./Footer";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { sendNotifyMeNotification } from "@/utils/functions";
 
-export default function Layout({ children }) {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps): JSX.Element {
   const { user, error, isLoading } = useUser();
   if (isLoading) return <LoadingSpinner />;
   if (error) {
@@ -69,13 +72,13 @@ export default function Layout({ children }) {
                 >
                   <div className="w-10 rounded-full">
                     <Image
-                      src={user.picture}
-                      alt={user.name}
+                      src={user.picture || ""}
+                      alt={user.name || ""}
                       width={50}
                       height={50}
                       className="rounded-full"
                       quality={90}
-                      fetchPriority={true}
+                      fetchPriority={"high"}
                     />
                   </div>
                 </motion.div>

@@ -1,7 +1,16 @@
-import React from "react";
-import { Navigate } from "react-big-calendar";
+import { Navigate, View, ToolbarProps } from "react-big-calendar";
 
-function CustomToolbar({ onNavigate, label, onView, view }) {
+interface CustomToolbarProps extends ToolbarProps {
+  onView: (view: View) => void;
+  view: View;
+}
+
+export default function CustomToolbar({
+  onNavigate,
+  label,
+  onView,
+  view,
+}: CustomToolbarProps): JSX.Element {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-base-200 rounded-lg shadow-md">
       <div className="flex items-center gap-2">
@@ -24,12 +33,7 @@ function CustomToolbar({ onNavigate, label, onView, view }) {
             />
           </svg>
         </button>
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => onNavigate(Navigate.TODAY)}
-        >
-          Today
-        </button>
+        <span className="text-lg font-medium">{label}</span>
         <button
           className="btn btn-sm btn-ghost"
           onClick={() => onNavigate(Navigate.NEXT)}
@@ -50,8 +54,7 @@ function CustomToolbar({ onNavigate, label, onView, view }) {
           </svg>
         </button>
       </div>
-      <h2 className="text-xl font-semibold text-primary">{label}</h2>
-      <div className="btn-group">
+      <div className="flex items-center gap-2">
         <button
           className={`btn btn-sm ${
             view === "month" ? "btn-active" : "btn-ghost"
@@ -80,5 +83,3 @@ function CustomToolbar({ onNavigate, label, onView, view }) {
     </div>
   );
 }
-
-export default CustomToolbar;

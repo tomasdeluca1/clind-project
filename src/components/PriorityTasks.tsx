@@ -1,27 +1,41 @@
 import { PinOff, Check } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { PriorityTasksProps, Task } from "@/types";
 
-export default function PriorityTasks({ tasks, onUpdateTask, onDeleteTask }) {
-  const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState("");
+export default function PriorityTasks({
+  tasks,
+  onUpdateTask,
+  onDeleteTask,
+}: PriorityTasksProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState<string>("");
 
-  function handleEdit(task) {
-    setEditingId(task._id);
+  function handleEdit(task: Task) {
+    setEditingId(task._id?.toString() || null);
     setEditText(task.text);
   }
 
-  function handleSave(task) {
-    onUpdateTask(task._id, { text: editText });
-    setEditingId(null);
+  function handleSave(task: Task) {
+    if (task._id) {
+      onUpdateTask(task._id.toString(), { text: editText });
+      setEditingId(null);
+    }
   }
 
-  function handleRemovePriority(task) {
-    onUpdateTask(task._id, { isPriority: false });
+  function handleRemovePriority(task: Task) {
+    if (task._id) {
+      onUpdateTask(task._id.toString(), { isPriority: false });
+    }
   }
 
-  function handleComplete(task) {
-    onUpdateTask(task._id, { isCompleted: true, isPriority: false });
+  function handleComplete(task: Task) {
+    if (task._id) {
+      onUpdateTask(task._id.toString(), {
+        isCompleted: true,
+        isPriority: false,
+      });
+    }
   }
 
   const priorityTasks = tasks.filter(
@@ -33,7 +47,7 @@ export default function PriorityTasks({ tasks, onUpdateTask, onDeleteTask }) {
       <AnimatePresence>
         {priorityTasks.map((task) => (
           <motion.li
-            key={task._id}
+            key={task._id?.toString() || ""}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -54,7 +68,7 @@ export default function PriorityTasks({ tasks, onUpdateTask, onDeleteTask }) {
             >
               <PinOff />
             </button>
-            {editingId === task._id ? (
+            {editingId === task._id?.toString() ? (
               <div className="flex-grow flex items-center">
                 <input
                   type="text"
@@ -72,7 +86,7 @@ export default function PriorityTasks({ tasks, onUpdateTask, onDeleteTask }) {
             ) : (
               <span className="flex-grow">{task.text}</span>
             )}
-            {editingId !== task._id && (
+            {editingId !== task._id?.toString() && (
               <div className="flex items-center">
                 <button
                   onClick={() => handleEdit(task)}
@@ -81,7 +95,7 @@ export default function PriorityTasks({ tasks, onUpdateTask, onDeleteTask }) {
                   Edit
                 </button>
                 <button
-                  onClick={() => onDeleteTask(task._id)}
+                  onClick={() => onDeleteTask(task._id?.toString() || "")}
                   className="btn btn-sm btn-ghost text-error"
                 >
                   Delete

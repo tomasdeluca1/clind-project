@@ -1,14 +1,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Task } from "@/types";
+
+interface UnfinishedTasksModalProps {
+  tasks: Task[];
+  onClose: () => void;
+  onSelectTasks: (selectedTaskIds: string[]) => void;
+}
 
 export default function UnfinishedTasksModal({
   tasks,
   onClose,
   onSelectTasks,
-}) {
-  const [selectedTasks, setSelectedTasks] = useState([]);
+}: UnfinishedTasksModalProps) {
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
 
-  const handleToggleTask = (taskId) => {
+  const handleToggleTask = (taskId: string) => {
     setSelectedTasks((prev) =>
       prev.includes(taskId)
         ? prev.filter((id) => id !== taskId)
@@ -38,15 +45,15 @@ export default function UnfinishedTasksModal({
         <p className="mb-4">Select the tasks you want to keep for today:</p>
         <div className="max-h-60 overflow-y-auto mb-4">
           {tasks.map((task) => (
-            <div key={task._id} className="flex items-center mb-2">
+            <div key={task._id?.toString()} className="flex items-center mb-2">
               <input
                 type="checkbox"
-                id={task._id}
+                id={task._id?.toString()}
                 className="checkbox checkbox-primary mr-2"
-                checked={selectedTasks.includes(task._id)}
-                onChange={() => handleToggleTask(task._id)}
+                checked={selectedTasks.includes(task._id?.toString() || "")}
+                onChange={() => handleToggleTask(task._id?.toString() || "")}
               />
-              <label htmlFor={task._id} className="cursor-pointer">
+              <label htmlFor={task._id?.toString()} className="cursor-pointer">
                 {task.text}
               </label>
             </div>

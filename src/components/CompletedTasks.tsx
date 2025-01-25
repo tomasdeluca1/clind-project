@@ -1,14 +1,27 @@
 import { useState } from "react";
 import { ChevronRight, Trash, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Task, TaskUpdate } from "@/types";
 
-export default function CompletedTasks({ tasks, onUpdateTask, onDeleteTask }) {
+interface CompletedTasksProps {
+  tasks: Task[];
+  onUpdateTask: (id: string, update: TaskUpdate) => Promise<void>;
+  onDeleteTask: (id: string) => Promise<void>;
+}
+
+export default function CompletedTasks({
+  tasks,
+  onUpdateTask,
+  onDeleteTask,
+}: CompletedTasksProps): JSX.Element {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const completedTasks = tasks.filter((task) => task.isCompleted);
 
-  function handleUncomplete(task) {
-    onUpdateTask(task._id, { isCompleted: false });
+  function handleUncomplete(task: Task) {
+    if (task._id) {
+      onUpdateTask(task._id.toString(), { isCompleted: false });
+    }
   }
 
   return (
@@ -19,48 +32,43 @@ export default function CompletedTasks({ tasks, onUpdateTask, onDeleteTask }) {
       transition={{ duration: 0.5 }}
     >
       <h2
-        className="text-xl font-semibold mb-2 cursor-pointer flex items-center"
+        className="flex items-center gap-2 cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <span className="mr-2">Completed</span>
-        <span className="text-sm text-gray-500">({completedTasks.length})</span>
-        <span className="ml-2 transition-transform duration-300 ease-in-out">
-          <ChevronRight
-            className={`transition-transform duration-300 ease-in-out ${
-              isExpanded ? "rotate-90" : "rotate-0"
-            }`}
-          />
-        </span>
+        <ChevronRight
+          className={`transform transition-transform ${
+            isExpanded ? "rotate-90" : ""
+          }`}
+        />
+        Completed Tasks ({completedTasks.length})
       </h2>
       <AnimatePresence>
         {isExpanded && (
           <motion.ul
-            className="space-y-2"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="space-y-2 mt-2"
           >
             {completedTasks.map((task) => (
               <motion.li
-                key={task._id}
+                key={task._id?.toString()}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="flex items-center justify-between bg-success/20 text-base-content p-2 rounded"
+                className="flex items-center justify-between p-2 rounded bg-success/20"
               >
                 <span className="line-through">{task.text}</span>
-                <div className="flex items-center">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleUncomplete(task)}
-                    className="btn btn-sm btn-ghost text-success mr-2 tooltip"
+                    className="btn btn-sm btn-ghost tooltip"
                     data-tip="Mark as incomplete"
                   >
                     <XCircle />
                   </button>
                   <button
-                    onClick={() => onDeleteTask(task._id)}
+                    onClick={() => onDeleteTask(task._id?.toString() || "")}
                     className="btn btn-sm btn-ghost text-error tooltip"
                     data-tip="Delete task"
                   >

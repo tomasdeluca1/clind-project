@@ -1,9 +1,12 @@
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { Github } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { useState } from "react";
+import Image from "next/image";
 
-const Footer = () => {
-  const [projects, setProjects] = useState([]);
+export default function Footer(): JSX.Element {
+  const [projects, setProjects] = useState<any[]>([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -15,16 +18,16 @@ const Footer = () => {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
 
-        const data = await res.json();
+        const data: any = await res.json();
         if (Array.isArray(data)) {
           setProjects(data);
         } else if (data.error) {
           setError(data.error);
         } else {
           console.error("Unexpected data format:", data);
-          setError("Invalid data format received");
+          setError("Invalid data format received" as any);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching projects:", error);
         setError(error.message || "Failed to load projects");
       }
@@ -138,6 +141,4 @@ const Footer = () => {
       </div>
     </motion.footer>
   );
-};
-
-export default Footer;
+}

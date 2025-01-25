@@ -3,8 +3,14 @@ import { UserProvider } from "@auth0/nextjs-auth0/client";
 import Layout from "@/components/Layout";
 import Head from "next/head";
 import { useEffect } from "react";
+import { AppProps } from "next/app";
+import { ThemeOption } from "@/types";
 
-function MyApp({ Component, pageProps, initialTheme }) {
+interface MyAppProps extends AppProps {
+  initialTheme: ThemeOption;
+}
+
+function MyApp({ Component, pageProps, initialTheme }: MyAppProps) {
   useEffect(() => {
     const setUserTheme = async () => {
       if (typeof window !== "undefined") {
@@ -24,7 +30,6 @@ function MyApp({ Component, pageProps, initialTheme }) {
             document.documentElement.setAttribute("data-theme", theme);
             localStorage.setItem("theme", theme);
           } else {
-            // Fallback to initialTheme if user settings can't be fetched
             document.documentElement.setAttribute("data-theme", "emerald");
             localStorage.setItem("theme", "emerald");
           }
@@ -38,9 +43,11 @@ function MyApp({ Component, pageProps, initialTheme }) {
 
     setUserTheme();
   }, [initialTheme]);
+
   return (
     <>
       <Head>
+        {" "}
         <meta charSet="UTF-8" />
         <meta name="title" content="Clind - Clear Tasks, Clean Mind" />
         <meta
@@ -102,30 +109,6 @@ function MyApp({ Component, pageProps, initialTheme }) {
       </UserProvider>
     </>
   );
-}
-
-export async function getServerSideProps(context) {
-  let initialTheme = "emerald";
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`,
-      {
-        headers: context.req.headers,
-      }
-    );
-    if (response.ok) {
-      const { theme } = await response.json();
-      initialTheme = theme;
-    }
-  } catch (error) {
-    console.error("Error fetching user theme:", error);
-  }
-
-  return {
-    props: {
-      initialTheme,
-    },
-  };
 }
 
 export default MyApp;

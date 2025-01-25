@@ -1,6 +1,6 @@
 import { useUser } from "@auth0/nextjs-auth0/client";
 
-export default function ButtonSignIn() {
+export default function ButtonSignIn(): JSX.Element {
   const { user } = useUser();
 
   return (

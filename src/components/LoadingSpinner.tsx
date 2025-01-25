@@ -1,7 +1,6 @@
 import { ListStart } from "lucide-react";
-import React from "react";
 
-function LoadingSpinner() {
+export default function LoadingSpinner(): JSX.Element {
   return (
     <div className="flex items-center justify-center h-screen fixed top-0 left-0 w-full z-0">
       <div className="relative w-24 h-24">
@@ -37,5 +36,3 @@ function LoadingSpinner() {
     </div>
   );
 }
-
-export default LoadingSpinner;

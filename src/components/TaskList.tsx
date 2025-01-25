@@ -3,28 +3,33 @@ import { useState, useCallback } from "react";
 import { capitalize } from "../utils/functions";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { TaskListProps, Task } from "@/types";
 
 export default function TaskList({
   tasks = [],
   onUpdateTask,
   onDeleteTask,
   priorityTasks = [],
-}) {
-  const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState("");
+}: TaskListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState<string>("");
 
-  function handleEdit(task) {
-    setEditingId(task._id);
+  function handleEdit(task: Task) {
+    setEditingId(task._id?.toString() || null);
     setEditText(capitalize(task.text));
   }
 
-  function handleSave(task) {
-    onUpdateTask(task._id, { text: editText });
-    setEditingId(null);
+  function handleSave(task: Task) {
+    if (task._id) {
+      onUpdateTask(task._id.toString(), { text: editText });
+      setEditingId(null);
+    }
   }
 
-  function handlePrioritize(task) {
-    onUpdateTask(task._id, { isPriority: true });
+  function handlePrioritize(task: Task) {
+    if (task._id) {
+      onUpdateTask(task._id.toString(), { isPriority: true });
+    }
   }
 
   const triggerFireworks = useCallback(() => {
@@ -32,7 +37,7 @@ export default function TaskList({
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-    function randomInRange(min, max) {
+    function randomInRange(min: number, max: number) {
       return Math.random() * (max - min) + min;
     }
 
@@ -53,22 +58,16 @@ export default function TaskList({
           emojis: ["🎉", "✨", "🎊"],
         })
       );
-      confetti(
-        Object.assign({}, defaults, {
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-          colors: ["#ffff00", "#ff00ff", "#00ffff"],
-          emojis: ["🎈", "🌟", "💥"],
-        })
-      );
     }, 250);
   }, []);
 
-  function handleComplete(task) {
+  function handleComplete(task: Task) {
     if (!task.isCompleted) {
       triggerFireworks();
     }
-    onUpdateTask(task._id, { isCompleted: !task.isCompleted });
+    onUpdateTask(task._id?.toString() || "", {
+      isCompleted: !task.isCompleted,
+    });
   }
 
   if (!tasks || tasks.length === 0) {
@@ -85,7 +84,7 @@ export default function TaskList({
         {tasks &&
           tasks.map((task) => (
             <motion.li
-              key={task._id}
+              key={task._id?.toString() || ""}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -115,7 +114,7 @@ export default function TaskList({
                   <Pin />
                 </button>
               )}
-              {editingId === task._id ? (
+              {editingId === task._id?.toString() ? (
                 <div className="flex items-center w-full">
                   <input
                     type="text"
@@ -145,7 +144,7 @@ export default function TaskList({
                       </button>
                     )}
                     <button
-                      onClick={() => onDeleteTask(task._id)}
+                      onClick={() => onDeleteTask(task._id?.toString() || "")}
                       className="btn btn-sm btn-ghost text-error"
                     >
                       Delete
