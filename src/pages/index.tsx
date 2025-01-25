@@ -83,26 +83,29 @@ export default function Home({
     setTasks((prevTasks) => [...prevTasks, newTask]);
   }
 
-  async function handleUpdateTask(id: string, updateData: Task) {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...updateData }),
-      }
-    );
-    if (response.ok) {
+  async function handleUpdateTask(id: string, updateData: TaskUpdate) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateData),
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to update task");
+
+      const updatedTask = await response.json();
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
           task._id?.toString() === id ? { ...task, ...updateData } : task
         )
       );
-      if (updateData.isCompleted) {
-        setUncompletedTasks((prevTasks) =>
-          prevTasks.filter((task) => task._id?.toString() !== id)
-        );
-      }
+    } catch (error) {
+      console.error("Error updating task:", error);
     }
   }
 
