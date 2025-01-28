@@ -15,6 +15,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "avatars.githubusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "clind-site.s3.us-east-2.amazonaws.com",
+      },
     ],
   },
 };

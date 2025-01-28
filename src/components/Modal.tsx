@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ReactNode } from "react";
+import { JSX, ReactNode } from "react";
 
 interface ModalProps {
   isOpen: boolean;

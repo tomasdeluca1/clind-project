@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Github } from "lucide-react";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -54,7 +54,7 @@ export default function Footer(): JSX.Element {
               href="https://huev.site"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-4 px-6 py-3 bg-secondary/90 hover:bg-secondary rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="group flex items-center gap-4 px-6 py-3 bg-yellow-400/20 hover:bg-yellow-400/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Image
                 src="https://huev.site/_next/image?url=%2Fhuev-logo.png&w=256&q=100"
@@ -76,7 +76,14 @@ export default function Footer(): JSX.Element {
 
           {/* Tagline Section */}
           <div className="text-center md:text-left flex flex-col space-y-4">
-            <h2 className="text-2xl font-bold text-primary mb-2">
+            <h2 className=" flex items-center gap-2 text-2xl font-bold text-primary mb-1">
+              <Image
+                src={"/miniatura.png"}
+                alt="Huevsite"
+                width={32}
+                height={32}
+                className="rounded-full p-1 bg-base-200 animate-pulse"
+              />
               Focus on what matters
             </h2>
             <p className="text-neutral-content/70 max-w-md">
@@ -87,10 +94,10 @@ export default function Footer(): JSX.Element {
 
           {/* Projects Section */}
           <div className="w-full">
-            <h3 className="text-xl font-semibold mb-6 text-neutral-content/90 border-b border-base-300 pb-2">
+            <h3 className="text-xl font-semibold mb-5 text-neutral-content/90 border-b border-base-300 pb-2">
               Other Projects by Huevsite
             </h3>
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               {projects ? (
                 projects.map((project) => {
                   if (project.name !== "Clind App") {

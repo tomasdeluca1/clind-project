@@ -1,4 +1,5 @@
 import { ListStart } from "lucide-react";
+import { JSX } from "react";
 
 export default function LoadingSpinner(): JSX.Element {
   return (

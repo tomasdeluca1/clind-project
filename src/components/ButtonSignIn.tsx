@@ -1,4 +1,5 @@
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { JSX } from "react";
 
 export default function ButtonSignIn(): JSX.Element {
   const { user } = useUser();

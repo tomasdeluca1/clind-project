@@ -1,4 +1,4 @@
-import { useUser } from "@auth0/nextjs-auth0/client";
+import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0/client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -6,7 +6,6 @@ import { capitalize } from "@/utils/functions";
 import { getSession } from "@auth0/nextjs-auth0";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { motion } from "framer-motion";
-import { withAuth } from "@/utils/with-auth";
 
 const themes = [
   "lofi",
@@ -31,7 +30,7 @@ const themes = [
   //   "luxury",
 ];
 
-function SettingsPage({ initialTheme }) {
+function SettingsPage({ initialTheme }: { initialTheme: string }) {
   const { user, error, isLoading } = useUser();
   const [currentTheme, setCurrentTheme] = useState(initialTheme);
   const router = useRouter();
@@ -52,7 +51,7 @@ function SettingsPage({ initialTheme }) {
     return <div>You don&#39;t have permission to view this page.</div>;
   }
 
-  const handleThemeChange = async (newTheme) => {
+  const handleThemeChange = async (newTheme: string) => {
     setCurrentTheme(newTheme);
 
     try {
@@ -213,7 +212,7 @@ function SettingsPage({ initialTheme }) {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context: any) {
   const session = await getSession(context.req, context.res);
   if (!session || !session.user) {
     return {
@@ -247,4 +246,4 @@ export async function getServerSideProps(context) {
   };
 }
 
-export default withAuth(SettingsPage);
+export default withPageAuthRequired(SettingsPage);

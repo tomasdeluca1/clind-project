@@ -1,12 +1,13 @@
 "use client";
 import clientPromise from "@/lib/mongodb";
 import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
+import { NextResponse } from "next/server";
 
 export default withApiAuthRequired(async function handler(req, res) {
-  const session = await getSession(req, res);
+  const session = await getSession();
 
   if (!session || !session.user) {
-    return res.status(401).json({ error: "Not authenticated" });
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
   const userId = session.user.sub;
@@ -16,22 +17,25 @@ export default withApiAuthRequired(async function handler(req, res) {
   switch (req.method) {
     case "GET":
       const settings = await collection.findOne({ auth0Id: userId });
-      res.status(200).json(settings || { userId, theme: "emerald" });
+      return NextResponse.json(settings || { userId, theme: "emerald" });
       break;
 
     case "PUT":
-      const { theme } = req.body;
+      const { theme } = await req.json();
 
       await collection.updateOne(
         { auth0Id: userId },
         { $set: { theme } },
         { upsert: true }
       );
-      res.status(200).json({ message: "Settings updated successfully" });
+      return NextResponse.json({ message: "Settings updated successfully" });
       break;
 
     default:
-      res.status(405).end();
+      return NextResponse.json(
+        { error: "Method not allowed" },
+        { status: 405 }
+      );
       break;
   }
 });

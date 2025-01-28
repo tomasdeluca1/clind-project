@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { ChevronRight, Trash, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Task, TaskUpdate } from "@/types";

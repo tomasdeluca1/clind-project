@@ -6,6 +6,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import { motion } from "framer-motion";
 import Footer from "./Footer";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { JSX } from "react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -134,7 +135,7 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
           )}
         </div>
       </motion.header>
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 min-h-[70vh]">{children}</main>
       <Footer />
     </motion.div>
   );

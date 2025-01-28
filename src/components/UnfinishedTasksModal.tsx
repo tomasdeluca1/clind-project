@@ -13,7 +13,9 @@ export default function UnfinishedTasksModal({
   onClose,
   onSelectTasks,
 }: UnfinishedTasksModalProps) {
-  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [selectedTasks, setSelectedTasks] = useState<string[]>(
+    tasks.map((task) => task._id?.toString() || "")
+  );
 
   const handleToggleTask = (taskId: string) => {
     setSelectedTasks((prev) =>

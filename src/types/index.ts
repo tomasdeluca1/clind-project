@@ -10,6 +10,8 @@ export interface User {
   updatedAt: Date;
   theme?: string;
   settings?: UserSettings;
+  subscription?: Subscription;
+  isSubscribed?: boolean;
 }
 
 export interface UserSettings {
@@ -172,3 +174,22 @@ export interface ApiError extends Error {
   status?: number;
   code?: string;
 }
+
+export interface Subscription {
+  _id?: ObjectId;
+  userId: string;
+  status: SubscriptionStatus;
+  planId: string;
+  variantId: string;
+  lemonSqueezyId: string;
+  currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type SubscriptionStatus =
+  | "active"
+  | "inactive"
+  | "past_due"
+  | "cancelled";

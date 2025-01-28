@@ -43,7 +43,7 @@ export default function PriorityTasks({
   );
 
   return (
-    <motion.ul className="space-y-2">
+    <motion.ul className="space-y-4 w-full">
       <AnimatePresence>
         {priorityTasks.map((task) => (
           <motion.li
@@ -52,54 +52,68 @@ export default function PriorityTasks({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="flex items-center justify-between bg-primary glass text-base-100 p-2 rounded"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gradient-to-r from-primary/90 to-primary glass text-base-100 p-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 gap-3"
           >
-            <button
-              onClick={() => handleComplete(task)}
-              className="btn btn-sm btn-outline mr-1 btn-ghost bg-transparent text-base-100 hover:bg-transparent border-0 tooltip-top tooltip"
-              data-tip="Mark as complete"
-            >
-              <Check />
-            </button>
-            <button
-              onClick={() => handleRemovePriority(task)}
-              className="btn btn-sm btn-outline text-error border-0 hover:text-base-content hover:bg-error btn-ghost mr-2 tooltip-error tooltop-right tooltip tooltip-text-white"
-              data-tip="Remove priority"
-            >
-              <PinOff />
-            </button>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <button
+                onClick={() => handleComplete(task)}
+                className="btn btn-circle btn-sm btn-outline btn-ghost  bg-green-100 text-green-500 hover:bg-green-100/20 flex items-center justify-center hover:text-base-100  tooltip tooltip-right hover:bg-base-content"
+                data-tip="Mark as complete"
+              >
+                <Check className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleRemovePriority(task)}
+                className="btn btn-circle btn-sm btn-outline btn-ghost bg-red-100 text-red-500 hover:bg-red-100/20 flex items-center justify-center hover:text-base-100  tooltip tooltip-right  "
+                data-tip="Remove priority"
+              >
+                <PinOff className="w-4 h-4" />
+              </button>
+            </div>
+
             {editingId === task._id?.toString() ? (
-              <div className="flex-grow flex items-center">
-                <input
-                  type="text"
+              <div className="flex-grow flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full">
+                <textarea
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
-                  className="input input-bordered w-full max-w-xs mr-2 text-base-content bg-base-100/50 focus:bg-base-100 transition-all duration-200"
+                  className="textarea textarea-bordered w-full text-base-content bg-base-100/90 focus:bg-base-100 transition-all duration-200 focus:ring-2 focus:ring-primary/50 focus:outline-none"
+                  placeholder="Update task..."
+                  autoFocus
                 />
-                <button
-                  onClick={() => handleSave(task)}
-                  className="btn btn-sm btn-ghost"
-                >
-                  Save
-                </button>
+                <div className="flex flex-col gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => handleSave(task)}
+                    className="btn btn-xs bg-base-100/20 hover:bg-base-100/30 text-base-100 border-0 flex-1"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingId(null)}
+                    className="btn btn-xs bg-base-100/20 hover:bg-error/30 text-base-100 border-0 flex-1"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             ) : (
-              <span className="flex-grow">{task.text}</span>
-            )}
-            {editingId !== task._id?.toString() && (
-              <div className="flex items-center">
-                <button
-                  onClick={() => handleEdit(task)}
-                  className="btn btn-sm btn-ghost mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => onDeleteTask(task._id?.toString() || "")}
-                  className="btn btn-sm btn-ghost text-error"
-                >
-                  Delete
-                </button>
+              <div className="flex-wrap flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-3">
+                <p className="break-words w-full sm:w-auto text-base font-medium">
+                  {task.text}
+                </p>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => handleEdit(task)}
+                    className="btn btn-xs bg-base-100/20 hover:bg-base-100/30 text-base-100 border-0 flex-1 sm:flex-none gap-2"
+                  >
+                    <span className=" inline">Edit</span>
+                  </button>
+                  <button
+                    onClick={() => onDeleteTask(task._id?.toString() || "")}
+                    className="btn btn-xs bg-base-100/20 hover:bg-error/30 text-base-100 border-0 flex-1 sm:flex-none gap-2"
+                  >
+                    <span className="inline">Delete</span>
+                  </button>
+                </div>
               </div>
             )}
           </motion.li>
@@ -110,7 +124,7 @@ export default function PriorityTasks({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.3 }}
-          className={`text-gray-500 italic ${
+          className={`text-base-content/60 italic text-center p-4 bg-base-200/50 rounded-lg ${
             priorityTasks.length === 0 ? "animate-pulse" : ""
           }`}
         >

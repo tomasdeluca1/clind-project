@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Home } from "lucide-react";
+import { JSX } from "react";
 
 export default function Custom404(): JSX.Element {
   return (

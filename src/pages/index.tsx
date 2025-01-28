@@ -4,19 +4,18 @@ import TaskInput from "@/components/TaskInput";
 import TaskList from "@/components/TaskList";
 import PriorityTasks from "@/components/PriorityTasks";
 import CompletedTasks from "@/components/CompletedTasks";
-import LandingPage from "@/components/LandingPage";
+
 import UnfinishedTasksModal from "@/components/UnfinishedTasksModal";
 import { getSession } from "@auth0/nextjs-auth0";
 import Head from "next/head";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Task, TaskUpdate } from "@/types";
+import LandingPage from "@/components/landing/Index";
 
 export default function Home({
   initialTasks,
-  lastLoginDate,
 }: {
-  initialTasks: Task[];
-  lastLoginDate: string | null;
+  initialTasks: { data: Task[] };
 }) {
   const { user, isLoading } = useUser();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -24,31 +23,37 @@ export default function Home({
   const [showUnfinishedModal, setShowUnfinishedModal] = useState(false);
 
   useEffect(() => {
-    if (user && initialTasks) {
-      const today = new Date().toISOString().split("T")[0];
-      const storedDate = lastLoginDate
-        ? new Date(lastLoginDate).toISOString().split("T")[0]
-        : null;
+    const fetchData = async () => {
+      if (user && initialTasks) {
+        const today = new Date().toISOString().split("T")[0];
 
-      if (storedDate !== today) {
-        // It's a new day, show the modal with uncompleted tasks
-        const unfinishedTasks = initialTasks.filter(
-          (task: Task) => !task.isCompleted
-        );
-        if (unfinishedTasks.length > 0) {
-          setUncompletedTasks(unfinishedTasks);
-          setShowUnfinishedModal(true);
+        const lastLoginDate = await updateUserLastLogin(user.sub || "", today);
+
+        console.log("lastLoginDate", lastLoginDate);
+        console.log("today", today);
+
+        if (lastLoginDate !== today) {
+          console.log("initialTasks", initialTasks);
+
+          // It's a new day, show the modal with uncompleted tasks
+          const unfinishedTasks = initialTasks.data.filter(
+            (task: Task) => !task.isCompleted
+          );
+          if (unfinishedTasks.length > 0) {
+            setUncompletedTasks(unfinishedTasks);
+            setShowUnfinishedModal(true);
+          } else {
+            setTasks([]);
+          }
         } else {
-          setTasks([]);
+          // It's the same day, use initialTasks
+          setTasks(initialTasks.data);
         }
-        // Update the user's last login date
-        updateUserLastLogin(user.sub || "", today);
-      } else {
-        // It's the same day, use initialTasks
-        setTasks(initialTasks);
       }
-    }
-  }, [user, initialTasks, lastLoginDate]);
+    };
+
+    fetchData();
+  }, [user, initialTasks]);
 
   const updateUserLastLogin = async (userId: string, date: string) => {
     try {
@@ -57,6 +62,7 @@ export default function Home({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, lastLoginDate: date }),
       });
+      return date;
     } catch (error) {
       console.error("Error updating last login date:", error);
     }
@@ -127,11 +133,10 @@ export default function Home({
       );
     }
   }
-
-  const priorityTasks = tasks.filter((task) => task.isPriority);
-  const nonPriorityTasks = tasks.filter(
-    (task) => !task.isPriority && !task.isCompleted
-  );
+  77;
+  const priorityTasks = tasks && tasks.filter((task: Task) => task.isPriority);
+  const nonPriorityTasks =
+    tasks && tasks.filter((task) => !task.isPriority && !task.isCompleted);
 
   if (isLoading) return <LoadingSpinner />;
 
