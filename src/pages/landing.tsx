@@ -1,22 +1,26 @@
-"use client";
-
-import { JSX, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { JSX } from "react";
 import HeroSection from "../components/landing/HeroSection";
 import FeatureCard from "../components/landing/FeatureCard";
 import VideoSection from "../components/landing/VideoSection";
-import PricingSection from "../components/landing/pricing/PricingSection";
 import { Brain, Target, Sparkles, ListTodo, Zap, Users } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import IntroSection from "../components/landing/IntroSection";
 import MethodsContainer from "../components/landing/MethodsContainer";
 import FinalCTA from "../components/landing/FinalCTA";
-import TestimonialsSection from "../components/landing/TestimonialsSection";
-import getProducts from "@/pages/api/lsqyProducts";
+
+// Dynamically import components that need client-side rendering
+const DynamicPricingSection = dynamic(
+  () => import("../components/landing/pricing/PricingSection"),
+  { ssr: false }
+);
+
+const DynamicTestimonialsSection = dynamic(
+  () => import("../components/landing/TestimonialsSection"),
+  { ssr: false }
+);
 
 export default function LandingPage(): JSX.Element {
-  const [products, setProducts] = useState<[]>([]);
-
   const features = [
     {
       icon: <Brain className="w-12 h-12 text-primary" />,
@@ -81,21 +85,9 @@ export default function LandingPage(): JSX.Element {
     },
   ];
 
-  useEffect(() => {
-    getProducts().then((products) => setProducts(products.data));
-
-    if (window.location.hash === "#pricing") {
-      document
-        .getElementById("pricing")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
-
   return (
-    <div className="min-h-screen overflow-y-auto">
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-16 md:py-24">
-        <HeroSection />
-      </div>
+    <div className="min-h-screen">
+      <HeroSection />
 
       <section className="py-12 sm:py-16 md:py-24 bg-base-100">
         <div className="container mx-auto px-4 max-w-7xl">
@@ -206,7 +198,7 @@ export default function LandingPage(): JSX.Element {
       </section> */}
       <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/70 to-base-100">
         <div className="container mx-auto px-4 max-w-7xl">
-          <TestimonialsSection />
+          <DynamicTestimonialsSection />
         </div>
       </section>
       <section
@@ -214,7 +206,7 @@ export default function LandingPage(): JSX.Element {
         id="pricing"
       >
         <div className="container mx-auto px-4 max-w-7xl">
-          <PricingSection products={products} />
+          <DynamicPricingSection />
         </div>
       </section>
 
