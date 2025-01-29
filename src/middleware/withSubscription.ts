@@ -14,7 +14,7 @@ export function withSubscription(handler: Function) {
     }
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db(process.env.MONGODB_DATABASE);
 
     const user = await db.collection<User>("users").findOne({
       auth0Id: session.user.sub,
@@ -29,6 +29,7 @@ export function withSubscription(handler: Function) {
 
     const isSubscribed =
       user.subscription?.status === "active" &&
+      user.subscription.currentPeriodEnd &&
       new Date(user.subscription.currentPeriodEnd) > new Date();
 
     // For free routes, add them here

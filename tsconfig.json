@@ -33,7 +33,8 @@
     "src/utils/with-auth.js",
     ".next/types/**/*.ts",
     "scripts/seed-testimonials.js",
-    "next.config.js"
+    "next.config.js",
+    "scripts/dev-webhook.js"
   ],
   "exclude": ["node_modules"]
 }

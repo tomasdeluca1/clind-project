@@ -1,18 +1,19 @@
-import { JSX } from "react";
-import HeroSection from "./HeroSection";
-import FeatureCard from "./FeatureCard";
-import VideoSection from "./VideoSection";
-import PricingSection from "./pricing/PricingSection";
+import { JSX, useEffect } from "react";
+import HeroSection from "../components/landing/HeroSection";
+import FeatureCard from "../components/landing/FeatureCard";
+import VideoSection from "../components/landing/VideoSection";
+import PricingSection from "../components/landing/pricing/PricingSection";
 import { Brain, Target, Sparkles, ListTodo, Zap, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import IntroSection from "./IntroSection";
-import MethodsContainer from "./MethodsContainer";
-import FinalCTA from "./FinalCTA";
-import TestimonialsSection from "./TestimonialsSection";
+import IntroSection from "../components/landing/IntroSection";
+import MethodsContainer from "../components/landing/MethodsContainer";
+import FinalCTA from "../components/landing/FinalCTA";
+import TestimonialsSection from "../components/landing/TestimonialsSection";
+import getProducts from "@/pages/api/lsqyProducts";
 
 export default function LandingPage(): JSX.Element {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [products, setProducts] = useState<[]>([]);
 
   const features = [
     {
@@ -78,28 +79,40 @@ export default function LandingPage(): JSX.Element {
     },
   ];
 
+  useEffect(() => {
+    getProducts().then((products) => setProducts(products.data));
+
+    if (window.location.hash === "#pricing") {
+      document
+        .getElementById("pricing")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
+    <div className="min-h-screen overflow-y-auto">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-16 md:py-24">
         <HeroSection />
       </div>
 
-      <section className="bg-base-100 py-24">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 md:py-24 bg-base-100">
+        <div className="container mx-auto px-4 max-w-7xl">
           <IntroSection />
         </div>
       </section>
 
-      <section className="py-24 bg-gradient-to-b from-base-100 to-base-200/70">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/70">
+        <div className="container mx-auto px-4 max-w-7xl">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-12 md:mb-16"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-6">Our Methods</h2>
-            <p className="text-xl text-base-content/70 max-w-3xl mx-auto leading-relaxed">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">
+              Our Methods
+            </h2>
+            <p className="text-lg sm:text-xl text-base-content/70 max-w-3xl mx-auto leading-relaxed px-4">
               We&#39;ve implemented proven productivity methods to help you
               manage your tasks effectively and maintain focus throughout your
               day.
@@ -109,20 +122,22 @@ export default function LandingPage(): JSX.Element {
         </div>
       </section>
 
-      <section className="py-24 bg-gradient-to-b from-base-200/70 to-base-100">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/70 to-base-100">
+        <div className="container mx-auto px-4 max-w-7xl">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-6">Why Choose Clind?</h2>
-            <p className="text-xl text-base-content/70 max-w-3xl mx-auto leading-relaxed">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6">
+              Why Choose Clind?
+            </h2>
+            <p className="text-lg sm:text-xl text-base-content/70 max-w-3xl mx-auto leading-relaxed px-4">
               Discover how Clind can transform your daily workflow and help you
               achieve more.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mt-8 sm:mt-12 mb-16 sm:mb-24">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-8 sm:mt-12 mb-8 sm:mb-16">
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}
@@ -130,6 +145,7 @@ export default function LandingPage(): JSX.Element {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="flex flex-col h-full"
                 >
                   <FeatureCard {...feature} />
                 </motion.div>
@@ -186,17 +202,22 @@ export default function LandingPage(): JSX.Element {
           <VideoSection isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
         </div>
       </section> */}
-      <section className="py-24 bg-gradient-to-b from-base-200/70 to-base-100">
-        <TestimonialsSection />
+      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/70 to-base-100">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <TestimonialsSection />
+        </div>
       </section>
-      <section className="py-24 bg-gradient-to-b from-base-100 to-base-200/50">
-        <div className="container mx-auto px-4">
-          <PricingSection />
+      <section
+        className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/50"
+        id="pricing"
+      >
+        <div className="container mx-auto px-4 max-w-7xl">
+          <PricingSection products={products} />
         </div>
       </section>
 
-      <section className="py-24 bg-gradient-to-b from-base-200/50 to-base-100">
-        <div className="container mx-auto px-4">
+      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/50 to-base-100">
+        <div className="container mx-auto px-4 max-w-7xl">
           <FinalCTA />
         </div>
       </section>

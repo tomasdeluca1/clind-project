@@ -10,7 +10,7 @@ import { getSession } from "@auth0/nextjs-auth0";
 import Head from "next/head";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Task, TaskUpdate } from "@/types";
-import LandingPage from "@/components/landing/Index";
+import { useRouter } from "next/router";
 
 export default function Home({
   initialTasks,
@@ -21,16 +21,13 @@ export default function Home({
   const [tasks, setTasks] = useState<Task[]>([]);
   const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
   const [showUnfinishedModal, setShowUnfinishedModal] = useState(false);
-
+  const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
       if (user && initialTasks) {
         const today = new Date().toISOString().split("T")[0];
 
         const lastLoginDate = await updateUserLastLogin(user.sub || "", today);
-
-        console.log("lastLoginDate", lastLoginDate);
-        console.log("today", today);
 
         if (lastLoginDate !== today) {
           console.log("initialTasks", initialTasks);
@@ -55,18 +52,30 @@ export default function Home({
     fetchData();
   }, [user, initialTasks]);
 
-  const updateUserLastLogin = async (userId: string, date: string) => {
+  async function updateUserLastLogin(userId: string, date: string) {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/lastLogin`, {
+      const response = await fetch(`/api/users/lastLogin`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, lastLoginDate: date }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          lastLoginDate: new Date(date).toISOString(),
+        }),
       });
-      return date;
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.lastLoginDate;
     } catch (error) {
       console.error("Error updating last login date:", error);
+      return null;
     }
-  };
+  }
 
   const handleSelectUnfinishedTasks = (selectedTaskIds: string[]) => {
     const selectedTasks = uncompletedTasks.filter((task) =>
@@ -140,7 +149,10 @@ export default function Home({
 
   if (isLoading) return <LoadingSpinner />;
 
-  if (!user) return <LandingPage />;
+  if (!user) {
+    router.push("/landing");
+    return;
+  }
 
   return (
     <>

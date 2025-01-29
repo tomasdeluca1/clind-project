@@ -1,30 +1,34 @@
-import { MongoClient, MongoClientOptions } from "mongodb";
+import { MongoClient } from "mongodb";
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please add your Mongo URI to .env.local");
 }
 
-const uri: string = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI;
 const options = {
-  useUnifiedTopology: true,
   useNewUrlParser: true,
-};
+  useUnifiedTopology: true,
+  enableUtf8Validation: false, // Disable strict UTF-8 validation
+} as const;
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-declare global {
-  var _mongoClientPromise: Promise<MongoClient>;
-}
-
 if (process.env.NODE_ENV === "development") {
-  if (!global._mongoClientPromise) {
-    client = new MongoClient(uri, options as MongoClientOptions);
-    global._mongoClientPromise = client.connect();
+  // In development mode, use a global variable so that the value
+  // is preserved across module reloads caused by HMR (Hot Module Replacement).
+  let globalWithMongo = global as typeof globalThis & {
+    _mongoClientPromise?: Promise<MongoClient>;
+  };
+
+  if (!globalWithMongo._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    globalWithMongo._mongoClientPromise = client.connect();
   }
-  clientPromise = global._mongoClientPromise;
+  clientPromise = globalWithMongo._mongoClientPromise;
 } else {
-  client = new MongoClient(uri, options as MongoClientOptions);
+  // In production mode, it's best to not use a global variable.
+  client = new MongoClient(uri, options);
   clientPromise = client.connect();
 }
 

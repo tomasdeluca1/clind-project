@@ -73,7 +73,6 @@ export default function TestimonialsSection(): JSX.Element {
         const response = await fetch("/api/testimonials");
         if (!response.ok) throw new Error("Failed to fetch testimonials");
         const data = await response.json();
-        console.log(data);
         setTestimonials(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");

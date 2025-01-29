@@ -11,7 +11,6 @@ export interface User {
   theme?: string;
   settings?: UserSettings;
   subscription?: Subscription;
-  isSubscribed?: boolean;
 }
 
 export interface UserSettings {
@@ -179,10 +178,10 @@ export interface Subscription {
   _id?: ObjectId;
   userId: string;
   status: SubscriptionStatus;
-  planId: string;
-  variantId: string;
-  lemonSqueezyId: string;
-  currentPeriodEnd: Date;
+  product_id: string | null;
+  variantId: string | null;
+  lemonSqueezyId: string | null;
+  currentPeriodEnd: Date | null;
   cancelAtPeriodEnd: boolean;
   createdAt: Date;
   updatedAt: Date;

@@ -11,7 +11,7 @@ export default async function handler(
     try {
       const client = await clientPromise;
 
-      const db = client.db();
+      const db = client.db(process.env.MONGODB_DATABASE);
       const testimonials = await db
         .collection("testimonials")
         .find({})
@@ -38,7 +38,7 @@ export default async function handler(
   if (req.method === "POST") {
     try {
       const client = await clientPromise;
-      const db = client.db("app");
+      const db = client.db(process.env.MONGODB_DATABASE);
 
       // Handle multipart form data
       const { quote, handle } = req.body;
@@ -79,7 +79,7 @@ export default async function handler(
   if (req.method === "DELETE") {
     try {
       const client = await clientPromise;
-      const db = client.db("app");
+      const db = client.db(process.env.MONGODB_DATABASE);
       const { id } = req.query;
 
       if (!id) {

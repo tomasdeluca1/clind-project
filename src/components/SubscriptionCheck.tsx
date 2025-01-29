@@ -21,10 +21,7 @@ export default function SubscriptionCheck({
         const response = await fetch(`/api/users/${user.sub}`);
         const userData: User = await response.json();
 
-        const isSubscribed =
-          userData.subscription?.status === "active" &&
-          new Date(userData.subscription.currentPeriodEnd) > new Date();
-
+        const isSubscribed = userData.subscription?.status === "active";
         if (!isSubscribed && !router.pathname.startsWith("/pricing")) {
           router.push("/pricing");
         } else {

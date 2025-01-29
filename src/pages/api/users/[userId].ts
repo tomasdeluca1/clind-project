@@ -3,6 +3,7 @@ import { getSession } from "@auth0/nextjs-auth0";
 import clientPromise from "@/lib/mongodb";
 import { sendNotifyMeNotification } from "@/utils/functions";
 import { User, ApiResponse } from "@/types";
+import { ObjectId } from "mongodb";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,13 +15,14 @@ export default async function handler(
   }
 
   const { userId } = req.query;
-
   if (session.user.sub !== userId) {
     return res.status(403).json({ success: false, error: "Not authorized" });
   }
 
   const client = await clientPromise;
-  const db = client.db();
+  const db = client.db(process.env.MONGODB_DATABASE, {
+    enableUtf8Validation: false,
+  });
 
   try {
     let user: User | null = await db
@@ -37,6 +39,18 @@ export default async function handler(
         createdAt: new Date(),
         updatedAt: new Date(),
         theme: "emerald",
+        subscription: {
+          _id: new ObjectId(),
+          userId: userId as string,
+          status: "inactive",
+          product_id: null,
+          variantId: null,
+          lemonSqueezyId: null,
+          currentPeriodEnd: new Date(),
+          cancelAtPeriodEnd: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
         settings: {
           theme: "emerald",
           notifications: true,
@@ -48,7 +62,9 @@ export default async function handler(
         },
       };
 
-      await db.collection<User>("users").insertOne(newUser);
+      await db
+        .collection<User>("users", { enableUtf8Validation: false })
+        .insertOne(newUser);
       await sendNotifyMeNotification();
       user = newUser;
     }

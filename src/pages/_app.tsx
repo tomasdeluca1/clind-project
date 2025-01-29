@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { AppProps } from "next/app";
 import { ThemeOption } from "@/types";
 import { Toaster } from "react-hot-toast";
+import RouteGuard from "@/components/guards/RouteGuard";
 
 interface MyAppProps extends AppProps {
   initialTheme: ThemeOption;
@@ -104,10 +105,12 @@ function MyApp({ Component, pageProps, initialTheme }: MyAppProps) {
         />
       </Head>
       <UserProvider>
-        <Layout>
-          <Toaster />
-          <Component {...pageProps} />
-        </Layout>
+        <RouteGuard>
+          <Layout>
+            <Toaster />
+            <Component {...pageProps} />
+          </Layout>
+        </RouteGuard>
       </UserProvider>
     </>
   );

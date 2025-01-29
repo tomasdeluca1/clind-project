@@ -1,34 +1,18 @@
-import { useUser } from "@auth0/nextjs-auth0/client";
-import { useState } from "react";
+import { JSX, useEffect, useState } from "react";
+import Layout from "@/components/Layout";
+import PricingSection from "@/components/landing/pricing/PricingSection";
+import getProducts from "@/pages/api/lsqyProducts";
 
-export default function Pricing() {
-  const { user } = useUser();
-  const [isLoading, setIsLoading] = useState(false);
+export default function PricingPage(): JSX.Element {
+  const [products, setProducts] = useState<[]>([]);
 
-  const handleSubscribe = async (priceId: string) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId }),
-      });
-
-      const { url } = await response.json();
-      window.location.href = url;
-    } catch (error) {
-      console.error("Error creating checkout:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    getProducts().then((products) => setProducts(products.data));
+  }, []);
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <h1 className="text-4xl font-bold text-center mb-12">Choose Your Plan</h1>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {/* Add your pricing cards here */}
-      </div>
-    </div>
+    <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/70">
+      <PricingSection products={products} />
+    </section>
   );
 }

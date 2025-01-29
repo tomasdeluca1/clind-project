@@ -17,7 +17,7 @@ export default withApiAuthRequired(async function handler(
   const userId = session.user.sub;
 
   const client = await clientPromise;
-  const db = client.db();
+  const db = client.db(process.env.MONGODB_DATABASE);
   const collection = db.collection(`user_${userId}`);
 
   try {

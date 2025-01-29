@@ -1,80 +1,180 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import crypto from "crypto";
 import clientPromise from "@/lib/mongodb";
-import { Subscription, User } from "@/types";
+import { logger } from "@/lib/logger";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const WEBHOOK_SECRET = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
+
+async function updateSubscription(
+  user_email: string,
+  subscriptionData: {
+    status: string;
+    endsAt: string | null;
+    updatedAt: string;
+    product_id: string;
+    variantId: string;
+    lemonSqueezyId: string;
+    cancelAtPeriodEnd: boolean;
+    createdAt: string;
+  }
+) {
+  try {
+    logger.info({
+      message: "Updating subscription",
+      user_email,
+      subscriptionData,
+    });
+
+    const client = await clientPromise;
+    const db = client.db(process.env.MONGODB_DATABASE);
+
+    logger.info({ message: "Connected to database", dbName: db.databaseName });
+
+    const result = await db.collection("users").updateOne(
+      { email: user_email },
+      {
+        $set: {
+          "subscription.status": subscriptionData.status,
+          "subscription.currentPeriodEnd": subscriptionData.endsAt
+            ? new Date(subscriptionData.endsAt)
+            : null,
+          "subscription.updatedAt": new Date(subscriptionData.updatedAt),
+          "subscription.product_id": subscriptionData.product_id,
+          "subscription.variantId": subscriptionData.variantId,
+          "subscription.lemonSqueezyId": subscriptionData.lemonSqueezyId,
+          "subscription.cancelAtPeriodEnd": subscriptionData.cancelAtPeriodEnd,
+          "subscription.createdAt": new Date(subscriptionData.createdAt),
+        },
+      }
+    );
+
+    logger.info({
+      message: "Subscription update result",
+      matchedCount: result.matchedCount,
+      modifiedCount: result.modifiedCount,
+    });
+
+    return result;
+  } catch (error) {
+    logger.error({
+      message: "Error updating subscription",
+      error: error instanceof Error ? error.message : "Unknown error",
+      user_email,
+      subscriptionData,
+    });
+    throw error;
+  }
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
-
-  const signature = req.headers["x-signature"];
-  // Verify webhook signature here...
-
-  const { data, meta } = req.body;
-  const { event_name } = meta;
-
-  const client = await clientPromise;
-  const db = client.db();
-
   try {
-    switch (event_name) {
-      case "subscription_created":
-      case "subscription_updated": {
-        const subscription: Subscription = {
-          userId: data.attributes.user_id,
-          status: data.attributes.status,
-          planId: data.attributes.product_id,
-          variantId: data.attributes.variant_id,
-          lemonSqueezyId: data.id,
-          currentPeriodEnd: new Date(data.attributes.ends_at),
-          cancelAtPeriodEnd: data.attributes.cancel_at_period_end,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+    logger.info({ message: "Handler invoked", method: req.method });
 
-        await db.collection<User>("users").updateOne(
-          { auth0Id: subscription.userId },
-          {
-            $set: {
-              subscription,
-              isSubscribed: subscription.status === "active",
-            },
-          }
-        );
-        break;
-      }
-
-      case "subscription_cancelled": {
-        await db.collection<User>("users").updateOne(
-          { "subscription.lemonSqueezyId": data.id },
-          {
-            $set: {
-              "subscription.status": "cancelled",
-              "subscription.updatedAt": new Date(),
-              isSubscribed: false,
-            },
-          }
-        );
-        break;
-      }
+    // Verify environment
+    if (process.env.NEXT_PUBLIC_NODE_ENV !== "production") {
+      logger.info({ message: "Webhook received in development mode" });
+      return res
+        .status(200)
+        .json({ message: "Webhook received in development" });
     }
 
-    res.status(200).json({ success: true });
+    // Read raw body for signature verification
+    const rawBody = await new Promise<string>((resolve, reject) => {
+      let body = "";
+      req.on("data", (chunk) => (body += chunk));
+      req.on("end", () => resolve(body));
+      req.on("error", (err) => reject(err));
+    });
+
+    // Check signature
+    const hmac = crypto.createHmac("sha256", WEBHOOK_SECRET || "");
+    const digest = Buffer.from(hmac.update(rawBody).digest("hex"), "utf8");
+    const signatureHeader = req.headers["x-signature"];
+    const signature = Buffer.from(
+      Array.isArray(signatureHeader)
+        ? signatureHeader[0]
+        : signatureHeader || "",
+      "utf8"
+    );
+
+    if (!crypto.timingSafeEqual(digest, signature)) {
+      logger.error({
+        message: "Invalid webhook signature",
+        signature: req.headers["x-signature"],
+      });
+      return res.status(400).json({ error: "Invalid signature" });
+    }
+
+    // Parse JSON after verification
+    const body = JSON.parse(rawBody);
+    const eventType = req.headers["x-event-name"];
+
+    logger.info({
+      message: "Webhook received",
+      eventName: eventType,
+      customData: body.meta.custom_data,
+    });
+
+    // Handle subscription events
+    switch (eventType) {
+      case "subscription_created":
+      case "subscription_updated":
+      case "subscription_cancelled":
+      case "subscription_resumed":
+        const user_email = body.data.attributes?.user_email;
+        if (!user_email) {
+          logger.error({
+            message: "Missing user_email in webhook",
+            webhook: body.meta,
+          });
+          return res.status(400).json({ error: "Missing customer ID" });
+        }
+
+        logger.info({ message: "Customer ID found", user_email });
+
+        await updateSubscription(user_email, {
+          status: body.data.attributes.status,
+          endsAt: body.data.attributes.ends_at,
+          updatedAt: body.data.attributes.updated_at,
+          product_id: body.data.attributes.product_id,
+          variantId: body.data.attributes.variant_id,
+          lemonSqueezyId: body.data.id,
+          cancelAtPeriodEnd: body.data.attributes.cancel_at_period_end,
+          createdAt: body.data.attributes.created_at,
+        });
+
+        logger.info({
+          message: "Subscription updated successfully",
+          user_email,
+          status: body.data.attributes.status,
+        });
+
+        return res
+          .status(200)
+          .json({ message: "Webhook processed successfully" });
+
+      default:
+        logger.info({
+          message: "Unhandled webhook event",
+          eventName: eventType,
+        });
+        return res.status(200).json({ message: "Unhandled webhook event" });
+    }
   } catch (error) {
-    console.error("Webhook error:", error);
-    res
-      .status(500)
-      .json({ success: false, error: "Webhook processing failed" });
+    logger.error({
+      message: "Unexpected webhook error",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 
+// Ensure raw body is available for signature verification
 export const config = {
   api: {
-    bodyParser: false, // Needed for signature verification
+    bodyParser: false, // Disable built-in Next.js body parsing
   },
 };
