@@ -196,13 +196,13 @@ export default function LandingPage(): JSX.Element {
           <VideoSection isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
         </div>
       </section> */}
-      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/70 to-base-100">
+      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/70">
         <div className="container mx-auto px-4 max-w-7xl">
           <DynamicTestimonialsSection />
         </div>
       </section>
       <section
-        className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/50"
+        className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/70 to-base-100"
         id="pricing"
       >
         <div className="container mx-auto px-4 max-w-7xl">
@@ -210,7 +210,7 @@ export default function LandingPage(): JSX.Element {
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/50 to-base-100">
+      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/70">
         <div className="container mx-auto px-4 max-w-7xl">
           <FinalCTA />
         </div>
