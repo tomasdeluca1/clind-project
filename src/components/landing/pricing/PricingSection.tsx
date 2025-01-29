@@ -14,8 +14,8 @@ export default function PricingSection() {
         ? [
             {
               name: "Basic Plan",
-              price: "3.99",
-              yearlyPrice: "39.99",
+              price: "1.99",
+              yearlyPrice: "19.99",
               description: "Essential features at an affordable price",
               features: [
                 { text: "Priority Three Rule method", included: true },
@@ -34,8 +34,8 @@ export default function PricingSection() {
             },
             {
               name: "Pro Plan",
-              price: "8.99",
-              yearlyPrice: "89.99",
+              price: "4.99",
+              yearlyPrice: "49.99",
               description: "Enhanced features for daily productivity",
               features: [
                 { text: "Basic Plan features", included: true },
