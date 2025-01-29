@@ -17,7 +17,6 @@ export default function PricingCard({
 }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useUser();
-  console.log(buy_now_url);
 
   const handleCheckout = async () => {
     const url = new URL(buy_now_url);
