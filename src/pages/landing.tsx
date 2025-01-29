@@ -1,3 +1,5 @@
+"use client";
+
 import { JSX, useEffect } from "react";
 import HeroSection from "../components/landing/HeroSection";
 import FeatureCard from "../components/landing/FeatureCard";
