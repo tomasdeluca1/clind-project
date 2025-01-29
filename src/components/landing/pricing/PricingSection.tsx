@@ -115,7 +115,7 @@ export default function PricingSection() {
     <div className="text-center space-y-8 sm:space-y-12">
       <div className="space-y-4">
         <h2 className="text-3xl sm:text-4xl font-bold">
-          Simple, Transparent Pricing
+          Great pricing, better features.
         </h2>
         <p className="text-base-content/70 max-w-2xl mx-auto">
           Choose the plan that best fits your needs. All plans include a 14-day
