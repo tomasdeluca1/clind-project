@@ -118,7 +118,7 @@ export default function PricingSection() {
           Great pricing, better features.
         </h2>
         <p className="text-base-content/70 max-w-2xl mx-auto">
-          Choose the plan that best fits your needs. All plans include a 14-day
+          Choose the plan that best fits your needs. All plans include a 7-day
           free trial.
         </p>
       </div>
@@ -133,7 +133,7 @@ export default function PricingSection() {
 
       <div className="mt-16 text-center space-y-4">
         <p className="text-base-content/70">
-          All plans include a 14-day free trial. No credit card required.
+          All plans include a 7-day free trial. No credit card required.
         </p>
         <div className="flex items-center justify-center gap-2 text-primary">
           <Clock className="w-5 h-5" />
