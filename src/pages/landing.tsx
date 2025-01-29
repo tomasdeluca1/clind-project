@@ -86,7 +86,7 @@ export default function LandingPage(): JSX.Element {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen py-12 sm:py-16 md:py-24">
       <HeroSection />
 
       <section className="py-12 sm:py-16 md:py-24 bg-base-100">
