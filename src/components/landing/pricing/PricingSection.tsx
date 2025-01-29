@@ -30,7 +30,9 @@ export default function PricingSection() {
               isPopular: true,
               buttonText: "Start Basic Plan",
               buttonLink:
-                "https://huevsite.lemonsqueezy.com/buy/daa10ae3-d2fc-439b-b682-e523c4e196e4",
+                "https://huevsite.lemonsqueezy.com/buy/89dc50da-6694-40cc-b72c-81051354ef1d",
+              buy_now_url:
+                "https://huevsite.lemonsqueezy.com/buy/89dc50da-6694-40cc-b72c-81051354ef1d",
             },
             {
               name: "Pro Plan",
