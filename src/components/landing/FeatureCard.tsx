@@ -17,7 +17,7 @@ export default function FeatureCard({
 }: FeatureCardProps): JSX.Element {
   return (
     <motion.div
-      className="sm:min-h-[450px] group relative overflow-hidden bg-base-100 p-6 sm:p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500"
+      className="sm:min-h-[250px] group relative overflow-hidden bg-base-100 p-6 sm:p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500"
       whileHover={{ y: -8 }}
     >
       {/* Animated Background Gradient */}
@@ -41,7 +41,7 @@ export default function FeatureCard({
         </p>
 
         {/* Feature List */}
-        {features.length > 0 && (
+        {/* {features.length > 0 && (
           <motion.ul
             className="space-y-2 sm:space-y-3 mt-4 sm:mt-6 border-t border-base-300 pt-4 sm:pt-6"
             initial={{ opacity: 0, y: 20 }}
@@ -64,7 +64,7 @@ export default function FeatureCard({
               </motion.li>
             ))}
           </motion.ul>
-        )}
+        )} */}
       </div>
 
       {/* Hover Effect Border */}
