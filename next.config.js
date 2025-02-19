@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
     MONGODB_DATABASE: process.env.MONGODB_DATABASE,
     LEMON_SQUEEZY_API_KEY: process.env.LEMON_SQUEEZY_API_KEY,
