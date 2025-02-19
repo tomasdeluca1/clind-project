@@ -122,7 +122,6 @@ export default async function handler(
     switch (eventType) {
       case "subscription_created":
       case "subscription_updated":
-      case "subscription_cancelled":
       case "subscription_resumed":
         const user_email = body.data.attributes?.user_email;
         if (!user_email) {
@@ -136,7 +135,7 @@ export default async function handler(
         logger.info({ message: "Customer ID found", user_email });
 
         await updateSubscription(user_email, {
-          status: body.data.attributes.status,
+          status: "active",
           endsAt: body.data.attributes.ends_at,
           updatedAt: body.data.attributes.updated_at,
           product_id: body.data.attributes.product_id,
@@ -149,12 +148,16 @@ export default async function handler(
         logger.info({
           message: "Subscription updated successfully",
           user_email,
-          status: body.data.attributes.status,
+          status: "active",
         });
 
         return res
           .status(200)
           .json({ message: "Webhook processed successfully" });
+
+      case "subscription_cancelled":
+        // ... handle cancellation
+        break;
 
       default:
         logger.info({
