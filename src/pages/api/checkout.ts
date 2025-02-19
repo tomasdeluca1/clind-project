@@ -40,11 +40,7 @@ export default async function handler(
       `https://api.lemonsqueezy.com/v1/checkouts?storeId=${STORE_ID}`,
       {
         method: "POST",
-        headers: {
-          Accept: "application/vnd.api+json",
-          "Content-Type": "application/vnd.api+json",
-          Authorization: `Bearer ${LEMON_SQUEEZY_API_KEY}`,
-        },
+        headers,
         body: JSON.stringify({
           data: {
             type: "checkouts",
@@ -69,6 +65,7 @@ export default async function handler(
                 receipt_link_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
                 receipt_button_text: "Access Dashboard",
                 receipt_thank_you_note: "Thank you for subscribing to Clind!",
+                after_payment_redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
               },
             },
             relationships: {
