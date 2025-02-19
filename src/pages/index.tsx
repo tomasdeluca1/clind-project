@@ -29,14 +29,14 @@ export default function Home({
 
         const lastLoginDate = await updateUserLastLogin(user.sub || "", today);
 
-        if (lastLoginDate !== today) {
+        if (lastLoginDate < today) {
           console.log("initialTasks", initialTasks);
 
           // It's a new day, show the modal with uncompleted tasks
-          const unfinishedTasks = initialTasks.data.filter(
+          const unfinishedTasks = initialTasks?.data?.filter(
             (task: Task) => !task.isCompleted
           );
-          if (unfinishedTasks.length > 0) {
+          if (unfinishedTasks?.length > 0) {
             setUncompletedTasks(unfinishedTasks);
             setShowUnfinishedModal(true);
           } else {
@@ -70,6 +70,8 @@ export default function Home({
       }
 
       const data = await response.json();
+      console.log(data);
+
       return data.lastLoginDate;
     } catch (error) {
       console.error("Error updating last login date:", error);
@@ -86,30 +88,26 @@ export default function Home({
   };
 
   async function handleAddTask(text: string) {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      }
-    );
+    const response = await fetch(`/api/tasks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
     const newTask = await response.json();
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    console.log(newTask);
+
+    setTasks((prevTasks) => [...prevTasks, newTask.data]);
   }
 
   async function handleUpdateTask(id: string, updateData: TaskUpdate) {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updateData),
-        }
-      );
+      const response = await fetch(`/api/tasks/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, ...updateData }),
+      });
 
       if (!response.ok) throw new Error("Failed to update task");
 
@@ -125,27 +123,32 @@ export default function Home({
   }
 
   async function handleDeleteTask(id: string) {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/tasks`,
-      {
+    try {
+      const response = await fetch(`/api/tasks/${id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete task");
       }
-    );
-    if (response.ok) {
+
       setTasks((prevTasks) =>
         prevTasks.filter((task) => task._id?.toString() !== id)
       );
       setUncompletedTasks((prevTasks) =>
         prevTasks.filter((task) => task._id?.toString() !== id)
       );
+    } catch (error) {
+      console.error("Error deleting task:", error);
     }
   }
-  77;
+
   const priorityTasks = tasks && tasks.filter((task: Task) => task.isPriority);
   const nonPriorityTasks =
-    tasks && tasks.filter((task) => !task.isPriority && !task.isCompleted);
+    tasks?.filter((task) => !task.isPriority && !task.isCompleted) || [];
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -216,7 +219,7 @@ export default function Home({
         </p>
         <TaskInput onAddTask={handleAddTask} />
         <div className="flex flex-col-reverse lg:flex-row mt-8 gap-6">
-          <div className="w-full lg:w-3/5">
+          <div className="w-full lg:w-3/5 max-h-[500px] overflow-y-auto">
             <h2 className="text-xl font-semibold mb-2">Today&#39;s tasks</h2>
             <TaskList
               tasks={nonPriorityTasks}
