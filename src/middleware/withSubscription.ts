@@ -27,13 +27,21 @@ export function withSubscription(handler: Function) {
       );
     }
 
+    // Add a grace period for subscription sync
+    const gracePeriod = 5 * 60 * 1000; // 5 minutes
+    const isInGracePeriod =
+      user.subscription?.updatedAt &&
+      new Date().getTime() - new Date(user.subscription.updatedAt).getTime() <
+        gracePeriod;
+
     const isSubscribed =
-      user.subscription?.status === "active" &&
-      user.subscription.currentPeriodEnd &&
-      new Date(user.subscription.currentPeriodEnd) > new Date();
+      (user.subscription?.status === "active" &&
+        user.subscription.currentPeriodEnd &&
+        new Date(user.subscription.currentPeriodEnd) > new Date()) ||
+      isInGracePeriod;
 
     // For free routes, add them here
-    const freePaths = ["/api/tasks", "/api/users"];
+    const freePaths = ["/api/tasks", "/api/users", "/dashboard"];
     const isFreePath = freePaths.some((path) =>
       request.nextUrl.pathname.startsWith(path)
     );
