@@ -7,9 +7,19 @@ import { AppProps } from "next/app";
 import { ThemeOption } from "@/types";
 import { Toaster } from "react-hot-toast";
 import RouteGuard from "@/components/guards/RouteGuard";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface MyAppProps extends AppProps {
   initialTheme: ThemeOption;
+}
+
+function ErrorFallback({ error }: { error: Error }) {
+  return (
+    <div role="alert" className="alert alert-error">
+      <h2>Something went wrong:</h2>
+      <pre>{error.message}</pre>
+    </div>
+  );
 }
 
 function MyApp({ Component, pageProps, initialTheme }: MyAppProps) {
@@ -47,7 +57,7 @@ function MyApp({ Component, pageProps, initialTheme }: MyAppProps) {
   }, [initialTheme]);
 
   return (
-    <>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Head>
         {" "}
         <meta charSet="UTF-8" />
@@ -112,7 +122,7 @@ function MyApp({ Component, pageProps, initialTheme }: MyAppProps) {
           </Layout>
         </RouteGuard>
       </UserProvider>
-    </>
+    </ErrorBoundary>
   );
 }
 
