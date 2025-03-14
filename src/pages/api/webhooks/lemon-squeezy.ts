@@ -45,6 +45,7 @@ async function updateSubscription(
           "subscription.lemonSqueezyId": subscriptionData.lemonSqueezyId,
           "subscription.cancelAtPeriodEnd": subscriptionData.cancelAtPeriodEnd,
           "subscription.createdAt": new Date(subscriptionData.createdAt),
+          "subscription.product_name": subscriptionData.product_name,
         },
       }
     );
@@ -158,8 +159,112 @@ export default async function handler(
           .json({ message: "Webhook processed successfully" });
 
       case "subscription_cancelled":
-        // ... handle cancellation
-        break;
+        const user_email_cancelled = body.data.attributes?.user_email;
+        if (!user_email_cancelled) {
+          logger.error({
+            message: "Missing user_email in webhook",
+            webhook: body.meta,
+          });
+          return res.status(400).json({ error: "Missing customer ID" });
+        }
+
+        await updateSubscription(user_email_cancelled, {
+          status: "inactive",
+          product_name: body.data.attributes.product_name,
+          endsAt: body.data.attributes.ends_at,
+          updatedAt: body.data.attributes.updated_at,
+          product_id: body.data.attributes.product_id,
+          variantId: body.data.attributes.variant_id,
+          lemonSqueezyId: body.data.id,
+          cancelAtPeriodEnd: true,
+          createdAt: body.data.attributes.created_at,
+        });
+
+        logger.info({
+          message: "Subscription cancelled successfully",
+          user_email: user_email_cancelled,
+          status: "inactive",
+        });
+
+        return res.status(200).json({
+          message: "Subscription cancelled successfully",
+        });
+
+      case "subscription_expired":
+        const user_email_expired = body.data.attributes?.user_email;
+        if (!user_email_expired) {
+          logger.error({
+            message: "Missing user_email in webhook",
+            webhook: body.meta,
+          });
+          return res.status(400).json({ error: "Missing customer ID" });
+        }
+
+        await updateSubscription(user_email_expired, {
+          status: "expired",
+          product_name: body.data.attributes.product_name,
+          endsAt: body.data.attributes.ends_at,
+          updatedAt: body.data.attributes.updated_at,
+          product_id: body.data.attributes.product_id,
+          variantId: body.data.attributes.variant_id,
+          lemonSqueezyId: body.data.id,
+          cancelAtPeriodEnd: true,
+          createdAt: body.data.attributes.created_at,
+        });
+
+        logger.info({
+          message: "Subscription expired successfully",
+          user_email: user_email_expired,
+          status: "expired",
+        });
+
+        return res.status(200).json({
+          message: "Subscription expired successfully",
+        });
+
+      case "subscription_paused":
+        const user_email_paused = body.data.attributes?.user_email;
+        if (!user_email_paused) {
+          logger.error({
+            message: "Missing user_email in webhook",
+            webhook: body.meta,
+          });
+          return res.status(400).json({ error: "Missing customer ID" });
+        }
+
+        await updateSubscription(user_email_paused, {
+          status: "paused",
+          product_name: body.data.attributes.product_name,
+          endsAt: body.data.attributes.ends_at,
+          updatedAt: body.data.attributes.updated_at,
+          product_id: body.data.attributes.product_id,
+          variantId: body.data.attributes.variant_id,
+          lemonSqueezyId: body.data.id,
+          cancelAtPeriodEnd: body.data.attributes.cancel_at_period_end,
+          createdAt: body.data.attributes.created_at,
+        });
+
+        logger.info({
+          message: "Subscription paused successfully",
+          user_email: user_email_paused,
+          status: "paused",
+        });
+
+        return res.status(200).json({
+          message: "Subscription paused successfully",
+        });
+
+      case "order_created":
+        // Handle one-time purchases if needed
+        logger.info({
+          message: "Order created",
+          order: body.data.id,
+          customer_email: body.data.attributes?.user_email,
+        });
+
+        return res.status(200).json({
+          message: "Order processed successfully",
+        });
 
       default:
         logger.info({
