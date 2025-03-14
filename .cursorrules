@@ -47,3 +47,108 @@ Key Conventions
 - Avoid for data fetching or state management.
 
 Follow Next.js docs for Data Fetching, Rendering, and Routing.
+
+# Clind Application Cursor Rules
+
+## Project Structure
+
+- Use feature-based directory structure
+- Keep related files close together
+- Follow Next.js 13+ conventions
+
+## File Naming
+
+- React components: PascalCase (e.g., TaskList.tsx)
+- Utilities and hooks: camelCase (e.g., useFeatures.ts)
+- Configuration files: kebab-case (e.g., cursor-rules.ts)
+- Test files: ComponentName.test.tsx
+
+## Component Organization
+
+- Group by feature/domain
+- Separate business logic from UI
+- Use composition over inheritance
+
+## State Management
+
+- Use React Query for server state
+- Context for global UI state
+- Local state for component-specific needs
+
+## Feature Access Tiers
+
+FREE:
+
+- Basic dashboard
+- Task creation (max 10)
+- Task completion
+- Basic UI themes
+
+BASIC:
+
+- Up to 25 tasks
+- Priority Three Rule method
+- Basic analytics
+- Custom themes
+- Data export
+- Limited reports
+
+PRO:
+
+- Unlimited tasks
+- 1-3-5 Rule method
+- Advanced analytics
+- Priority support
+- Weekly summaries
+- Priority reminders
+
+TEAM:
+
+- All Pro features
+- Team collaboration
+- Custom workflows
+- API access
+- Dedicated support
+
+## Code Style
+
+- Use TypeScript strict mode
+- Prefer interfaces over types
+- Use function declarations
+- Implement proper error boundaries
+- Add JSDoc for complex functions
+
+## Performance
+
+- Implement code splitting
+- Use Next.js Image component
+- Optimize for Core Web Vitals
+- Implement proper loading states
+
+## Testing
+
+- Unit tests for utilities
+- Integration tests for features
+- E2E tests for critical paths
+- Test feature access control
+
+## Security
+
+- Implement proper auth checks
+- Validate feature access
+- Sanitize user inputs
+- Handle API errors gracefully
+
+## API Structure
+
+- RESTful endpoints
+- Proper error responses
+- Rate limiting
+- Subscription validation
+
+## Documentation
+
+- Document feature flags
+- Maintain API documentation
+- Add usage examples
+- Keep README updated

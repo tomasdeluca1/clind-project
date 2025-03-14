@@ -5,9 +5,9 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { AppProps } from "next/app";
 import { ThemeOption } from "@/types";
-import { Toaster } from "react-hot-toast";
 import RouteGuard from "@/components/guards/RouteGuard";
 import { ErrorBoundary } from "react-error-boundary";
+import { Toaster } from "sonner";
 
 interface MyAppProps extends AppProps {
   initialTheme: ThemeOption;
@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps, initialTheme }: MyAppProps) {
       if (typeof window !== "undefined") {
         try {
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/user-settings`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/user-profile`,
             {
               method: "GET",
               credentials: "include",
@@ -117,7 +117,8 @@ function MyApp({ Component, pageProps, initialTheme }: MyAppProps) {
       <UserProvider>
         <RouteGuard>
           <Layout>
-            <Toaster />
+            <Toaster richColors position="top-center" />
+
             <Component {...pageProps} />
           </Layout>
         </RouteGuard>

@@ -8,6 +8,8 @@ import CustomToolbar from "@/components/CustomToolbar";
 import CustomDateHeader from "@/components/CustomDateHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import { Task } from "@/types";
+import Link from "next/link";
+import { useSubscription } from "@/components/guards/RouteGuard";
 
 // Setup the localizer for react-big-calendar
 const localizer = momentLocalizer(moment);
@@ -15,9 +17,10 @@ const localizer = momentLocalizer(moment);
 export default function UserCalendar({
   initialTasks,
 }: {
-  initialTasks: Task[];
+  initialTasks: { success: boolean; data: Task[] };
 }) {
-  const [tasks, setTasks] = useState(initialTasks);
+  console.log(initialTasks);
+  const [tasks, setTasks] = useState(initialTasks.data);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -48,7 +51,21 @@ export default function UserCalendar({
 
     return { dayTasks, priorityTasks, completedTasks };
   };
+  const { subscriptionTier } = useSubscription();
 
+  if (subscriptionTier === "free") {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <h3 className="text-lg font-semibold mb-2">Calendar Feature</h3>
+        <p className="text-base-content/70 mb-4">
+          Upgrade to access the calendar feature and organize your tasks better.
+        </p>
+        <Link href="/pricing" className="btn btn-primary">
+          Upgrade Now
+        </Link>
+      </div>
+    );
+  }
   return (
     <>
       <AnimatePresence>
@@ -83,11 +100,17 @@ export default function UserCalendar({
           hidden power
         </p>
         <motion.div
-          className="bg-base-100 p-6 rounded-xl shadow-lg"
+          className="bg-base-100 mb-6"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
+          <style jsx global>{`
+            .rbc-off-range-bg {
+              background-color: var(--base-100);
+              opacity: 0.5;
+            }
+          `}</style>
           <Calendar<{
             title: string;
             start: Date;
@@ -103,18 +126,19 @@ export default function UserCalendar({
             onSelectEvent={handleSelectEvent}
             onSelectSlot={handleSelectSlot}
             selectable
-            className="text-base-content"
+            className="text-base-content bg-base-200 rounded-xl shadow-lg"
             views={["month", "week", "day"]}
             defaultView="month"
             toolbar={true}
             popup
             eventPropGetter={(event) => ({
-              className: `bg-primary/90 text-primary-content rounded-lg p-2 shadow-md transition-all duration-300 hover:bg-primary ${
+              className: `bg-primary/90 text-primary-content rounded-lg p-2 transition-all duration-300 hover:bg-primary ${
                 event.resource.isPriority ? "border-l-4 border-accent" : ""
               }`,
             })}
             dayPropGetter={(date) => ({
-              className: "hover:bg-base-200 transition-colors duration-300",
+              className:
+                "hover:bg-base-200 bg-base-100 transition-colors duration-300",
             })}
             components={{
               toolbar: (props: any) => <CustomToolbar {...props} />,
@@ -279,6 +303,7 @@ function Icon({ name, className }: { name: string; className: string }) {
 
 export async function getServerSideProps(context: any) {
   const session = await getSession(context.req, context.res);
+
   if (!session || !session.user) {
     return {
       redirect: {
@@ -301,7 +326,7 @@ export async function getServerSideProps(context: any) {
 
   return {
     props: {
-      initialTasks,
+      initialTasks: initialTasks || [],
     },
   };
 }

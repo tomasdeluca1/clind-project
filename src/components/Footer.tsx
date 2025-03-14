@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github } from "lucide-react";
+import { Github, ListStart } from "lucide-react";
 import { motion } from "framer-motion";
 import { JSX, useEffect } from "react";
 import { useState } from "react";
@@ -54,21 +54,21 @@ export default function Footer(): JSX.Element {
               href="https://huev.site"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-4 px-6 py-3 bg-yellow-400/20 hover:bg-yellow-400/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="group flex items-center gap-4 px-4 py-3 bg-primary/20 hover:bg-primary/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <Image
-                src="https://huev.site/_next/image?url=%2Fhuev-logo.png&w=256&q=100"
+                src="https://huev.site/_next/image?url=https%3A%2F%2Fs3.us-east-2.amazonaws.com%2Fhuev.site.s3%2FindexContext%2Fcasual-profile-picture.jpg&w=3840&q=75"
                 alt="Huevsite"
                 width={48}
                 height={48}
-                className="rounded-full ring-2 ring-white/20 group-hover:ring-white/40 transition-all"
+                className="rounded-full ring-2 ring-white/20 group-hover:ring-white/40 transition-all object-cover w-12 h-12"
                 priority={true}
-                quality={90}
+                quality={100}
               />
               <div className="flex flex-col">
                 <span className="text-white font-bold text-lg">Huevsite</span>
                 <span className="text-white/80 text-sm">
-                  Innovation & Design
+                  Building useful tools
                 </span>
               </div>
             </a>
@@ -77,60 +77,39 @@ export default function Footer(): JSX.Element {
           {/* Tagline Section */}
           <div className="text-center md:text-left flex flex-col space-y-4">
             <h2 className=" flex items-center gap-2 text-2xl font-bold text-primary mb-1">
-              <Image
-                src={"/miniatura.png"}
-                alt="Huevsite"
-                width={32}
-                height={32}
-                className="rounded-full p-1 bg-base-200 animate-pulse"
-              />
+              <ListStart className="w-6 h-6" />
               Focus on what matters
             </h2>
             <p className="text-neutral-content/70 max-w-md">
-              Empowering developers & designers to build better solutions
-              through innovative tools and seamless experiences.
+              Discover a powerful tool designed to help you conquer anxiety and
+              enhance your productivity.
             </p>
           </div>
 
           {/* Projects Section */}
           <div className="w-full">
             <h3 className="text-xl font-semibold mb-5 text-neutral-content/90 border-b border-base-300 pb-2">
-              Other Projects by Huevsite
+              Shipped by Huevsite
             </h3>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {projects ? (
                 projects.map((project) => {
                   if (project.name !== "Clind App") {
                     return (
                       <motion.div
                         key={project.name}
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ scale: 1.05 }}
                         className="w-full"
                       >
                         <a
                           href={project.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-base-300/30 transition-all duration-200"
+                          className="flex items-center gap-3 p-2 rounded-lg bg-base-200 hover:bg-primary group transition-shadow duration-300 shadow-md hover:shadow-xl transform hover:scale-105"
                         >
-                          <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                          <span className="text-neutral-content/90 hover:text-primary transition-colors">
+                          <span className="text-base-content/90 transition-colors font-semibold text-sm">
                             {project.name}
                           </span>
-                          <motion.svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5l7 7-7 7"
-                            />
-                          </motion.svg>
                         </a>
                       </motion.div>
                     );

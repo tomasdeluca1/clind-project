@@ -177,6 +177,7 @@ export interface ApiError extends Error {
 export interface Subscription {
   _id?: ObjectId;
   userId: string;
+  product_name: string;
   status: SubscriptionStatus;
   product_id: string | null;
   variantId: string | null;

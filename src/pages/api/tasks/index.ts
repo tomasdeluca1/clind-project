@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import clientPromise from "@/lib/mongodb";
 import { Task, TaskUpdate, ApiResponse } from "@/types";
+import { getUserTierFromProduct } from "@/config/cursor-rules";
 
 export default withApiAuthRequired(async function handler(
   req: NextApiRequest,
@@ -28,6 +29,22 @@ export default withApiAuthRequired(async function handler(
       }
 
       case "POST": {
+        // Check task limit for free users
+        const user = await db.collection("users").findOne({ auth0Id: userId });
+        const subscription = user?.subscription;
+        const tier = getUserTierFromProduct(subscription?.product_name || "");
+
+        if (tier === "free") {
+          const taskCount = await collection.countDocuments({});
+          if (taskCount >= 6) {
+            return res.status(403).json({
+              success: false,
+              error:
+                "Free tier limited to 10 tasks. Please upgrade to create more tasks.",
+            });
+          }
+        }
+
         const newTask: Omit<Task, "_id"> = {
           text: body.text,
           userId: userId,

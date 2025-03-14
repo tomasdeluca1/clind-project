@@ -7,11 +7,18 @@ export function capitalize(str: string): string {
 
 export async function sendNotifyMeNotification(): Promise<void> {
   try {
-    await fetch(process.env.NOTIFY_ME_WEBHOOK_URL || "", {
+    console.log("Sending notification...");
+
+    await fetch("https://sendpushnotification-tpbm5r3g3q-uc.a.run.app", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "x-api-key": process.env.NOTIFY_ME_API_KEY || "",
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        text: "New user registered on Clind!",
+        uid: process.env.NOTIFY_ME_UID || "",
+        projectid: process.env.NOTIFY_ME_PROJECTID || "",
+        eventType: "newLogin",
       }),
     });
   } catch (error) {

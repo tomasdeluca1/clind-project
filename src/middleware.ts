@@ -10,6 +10,7 @@ const PUBLIC_PATHS = ["/", "/landing", "/login", "/pricing", "/api/auth"];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  console.log("asd");
   // Allow public paths
   if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();

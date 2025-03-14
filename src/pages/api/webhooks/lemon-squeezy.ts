@@ -16,6 +16,7 @@ async function updateSubscription(
     lemonSqueezyId: string;
     cancelAtPeriodEnd: boolean;
     createdAt: string;
+    product_name: string;
   }
 ) {
   try {
@@ -136,6 +137,7 @@ export default async function handler(
 
         await updateSubscription(user_email, {
           status: "active",
+          product_name: body.data.attributes.product_name,
           endsAt: body.data.attributes.ends_at,
           updatedAt: body.data.attributes.updated_at,
           product_id: body.data.attributes.product_id,

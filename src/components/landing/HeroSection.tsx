@@ -1,42 +1,36 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Image from "next/image";
-import { JSX } from "react";
+import { ListStart } from "lucide-react";
 
-export default function HeroSection(): JSX.Element {
+export default function HeroSection() {
   return (
     <motion.header
-      className="text-center mb-24"
+      className="flex flex-col items-center text-center mb-24 px-6"
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
       <Link href="/api/auth/login">
         <motion.div
-          className="inline-block mb-8"
-          whileHover={{ scale: 1.05 }}
+          className="mb-6 rounded-full p-5 bg-base-200 border-4 border-primary shadow-sm transition-all hover:shadow-md hover:scale-105"
           whileTap={{ scale: 0.95 }}
         >
-          <Image
-            src="/miniatura.png"
-            alt="Clind Logo"
-            width={100}
-            height={100}
-            className="mx-auto rounded-2xl shadow-xl"
-            priority
-          />
+          <ListStart className="w-20 h-20 text-primary" />
         </motion.div>
       </Link>
-      <h1 className="text-5xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400 bg-clip-text text-transparent">
+
+      <h1 className="text-5xl lg:text-6xl font-extrabold mb-4 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400 bg-clip-text text-transparent drop-shadow-md">
         Simplify Your Tasks, Clear Your Mind
       </h1>
-      <p className="text-2xl text-base-content/80 max-w-3xl mx-auto leading-relaxed">
-        Transform your daily chaos into calm, organized productivity
+
+      <p className="text-lg lg:text-xl text-base-content/80 max-w-3xl mx-auto leading-relaxed">
+        Transform your daily chaos into calm, organized productivity.
       </p>
-      <motion.div className="mt-8" whileHover={{ scale: 1.02 }}>
+
+      <motion.div className="mt-8" whileHover={{ scale: 1.05 }}>
         <Link
           href="/api/auth/login"
-          className="btn btn-primary btn-lg text-white gap-3 text-xl"
+          className="btn btn-primary btn-lg text-white flex items-center gap-3 px-6 py-3 rounded-lg shadow-md transition-all hover:shadow-xl hover:bg-opacity-90"
         >
           Start Your Journey to Clarity
           <svg

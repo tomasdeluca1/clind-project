@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { JSX } from "react";
+import { JSX, useCallback } from "react";
 import { Quote } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 
@@ -18,26 +18,28 @@ export default function TestimonialsSection(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const scroll = (direction: "left" | "right") => {
-    if (sliderRef.current) {
-      const scrollAmount = 300;
-      const newScrollPosition =
-        sliderRef.current.scrollLeft +
-        (direction === "left" ? -scrollAmount : scrollAmount);
+  const scroll = useCallback(
+    (direction: "left" | "right") => {
+      if (sliderRef.current) {
+        const scrollAmount = 300;
+        const newScrollPosition =
+          sliderRef.current.scrollLeft +
+          (direction === "left" ? -scrollAmount : scrollAmount);
 
-      sliderRef.current.scrollTo({
-        left: newScrollPosition,
-        behavior: "smooth",
-      });
+        sliderRef.current.scrollTo({
+          left: newScrollPosition,
+          behavior: "smooth",
+        });
 
-      // Update current index
-      const newIndex =
-        direction === "left"
-          ? Math.max(0, currentIndex - 1)
-          : Math.min(testimonials.length - 1, currentIndex + 1);
-      setCurrentIndex(newIndex);
-    }
-  };
+        const newIndex =
+          direction === "left"
+            ? Math.max(0, currentIndex - 1)
+            : Math.min(testimonials.length - 1, currentIndex + 1);
+        setCurrentIndex(newIndex);
+      }
+    },
+    [currentIndex, testimonials.length]
+  );
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -65,7 +67,7 @@ export default function TestimonialsSection(): JSX.Element {
         clearInterval(intervalId);
       }
     };
-  }, [isHovering, currentIndex]);
+  }, [isHovering, scroll]);
 
   useEffect(() => {
     async function fetchTestimonials() {
@@ -83,6 +85,14 @@ export default function TestimonialsSection(): JSX.Element {
 
     fetchTestimonials();
   }, []);
+
+  if (testimonials.length === 0) {
+    return (
+      <div className="text-center py-24 text-error">
+        <p>No testimonials found</p>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -145,9 +155,11 @@ export default function TestimonialsSection(): JSX.Element {
               >
                 <div className="flex items-start gap-4">
                   <div className="relative w-12 h-12 flex-shrink-0">
-                    <img
+                    <Image
                       src={testimonial.avatar}
                       alt={testimonial.handle}
+                      width={48}
+                      height={48}
                       className="rounded-full object-cover border-2 border-primary"
                     />
                   </div>

@@ -86,16 +86,16 @@ export default function LandingPage(): JSX.Element {
   ];
 
   return (
-    <div className="min-h-screen pt-12 sm:pt-16 md:pt-24">
+    <div className="min-h-screen pt-12 sm:pt-16 md:pt-24 bg-gradient-to-b from-base-100 via-base-200/70 to-base-200/70">
       <HeroSection />
 
-      <section className="py-12 sm:py-16 md:py-24 bg-base-100">
+      <section className="py-12 sm:py-16 md:py-24">
         <div className="container mx-auto px-4 max-w-7xl">
           <IntroSection />
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/70">
+      <section className="py-12 sm:py-16 md:py-24 ">
         <div className="container mx-auto px-4 max-w-7xl">
           <motion.div
             className="text-center mb-8 sm:mb-12 md:mb-16"
@@ -116,7 +116,7 @@ export default function LandingPage(): JSX.Element {
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/70 to-base-100">
+      <section className="py-12 sm:py-16 md:py-24 ">
         <div className="container mx-auto px-4 max-w-7xl">
           <motion.div
             className="text-center mb-8 sm:mb-12"
@@ -196,21 +196,18 @@ export default function LandingPage(): JSX.Element {
           <VideoSection isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
         </div>
       </section> */}
-      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/70">
+      <section className="py-12 sm:py-16 md:py-24 ">
         <div className="container mx-auto px-4 max-w-7xl">
           <DynamicTestimonialsSection />
         </div>
       </section>
-      <section
-        className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-200/70 to-base-100"
-        id="pricing"
-      >
+      <section className="py-12 sm:py-16 md:py-24 " id="pricing">
         <div className="container mx-auto px-4 max-w-7xl">
           <DynamicPricingSection />
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-base-100 to-base-200/70">
+      <section className="py-12 sm:py-16 md:py-24 ">
         <div className="container mx-auto px-4 max-w-7xl">
           <FinalCTA />
         </div>

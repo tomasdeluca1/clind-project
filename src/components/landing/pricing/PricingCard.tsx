@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Check, X, Clock } from "lucide-react";
-import { toast } from "react-hot-toast";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
 export default function PricingCard({

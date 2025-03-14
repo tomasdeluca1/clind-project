@@ -4,13 +4,13 @@ import TaskInput from "@/components/TaskInput";
 import TaskList from "@/components/TaskList";
 import PriorityTasks from "@/components/PriorityTasks";
 import CompletedTasks from "@/components/CompletedTasks";
-
 import UnfinishedTasksModal from "@/components/UnfinishedTasksModal";
 import { getSession } from "@auth0/nextjs-auth0";
 import Head from "next/head";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { Task, TaskUpdate } from "@/types";
 import { useRouter } from "next/router";
+import { useFeatures } from "@/hooks/useFeatures";
 
 export default function Home({
   initialTasks,
@@ -18,33 +18,25 @@ export default function Home({
   initialTasks: { data: Task[] };
 }) {
   const { user, isLoading } = useUser();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { canUseFeature } = useFeatures();
+  const [tasks, setTasks] = useState<Task[]>(initialTasks.data || []);
   const [uncompletedTasks, setUncompletedTasks] = useState<Task[]>([]);
   const [showUnfinishedModal, setShowUnfinishedModal] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     const fetchData = async () => {
-      if (user && initialTasks) {
+      if (user) {
         const today = new Date().toISOString().split("T")[0];
-
         const lastLoginDate = await updateUserLastLogin(user.sub || "", today);
 
         if (lastLoginDate < today) {
-          console.log("initialTasks", initialTasks);
-
-          // It's a new day, show the modal with uncompleted tasks
-          const unfinishedTasks = initialTasks?.data?.filter(
-            (task: Task) => !task.isCompleted
-          );
-          if (unfinishedTasks?.length > 0) {
+          const unfinishedTasks =
+            initialTasks.data?.filter((task: Task) => !task.isCompleted) || [];
+          if (unfinishedTasks.length > 0) {
             setUncompletedTasks(unfinishedTasks);
             setShowUnfinishedModal(true);
-          } else {
-            setTasks([]);
           }
-        } else {
-          // It's the same day, use initialTasks
-          setTasks(initialTasks.data);
         }
       }
     };
@@ -70,8 +62,6 @@ export default function Home({
       }
 
       const data = await response.json();
-      console.log(data);
-
       return data.lastLoginDate;
     } catch (error) {
       console.error("Error updating last login date:", error);
@@ -88,15 +78,17 @@ export default function Home({
   };
 
   async function handleAddTask(text: string) {
-    const response = await fetch(`/api/tasks`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    });
-    const newTask = await response.json();
-    console.log(newTask);
-
-    setTasks((prevTasks) => [...prevTasks, newTask.data]);
+    if (canUseFeature("task_creation")) {
+      const response = await fetch(`/api/tasks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const newTask = await response.json();
+      setTasks((prevTasks) => [...prevTasks, newTask.data]);
+    } else {
+      alert("Upgrade your subscription to add more tasks.");
+    }
   }
 
   async function handleUpdateTask(id: string, updateData: TaskUpdate) {
@@ -114,7 +106,7 @@ export default function Home({
       const updatedTask = await response.json();
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task._id?.toString() === id ? { ...task, ...updateData } : task
+          task._id?.toString() === id ? { ...task, ...updatedTask.data } : task
         )
       );
     } catch (error) {
@@ -146,15 +138,16 @@ export default function Home({
     }
   }
 
-  const priorityTasks = tasks && tasks.filter((task: Task) => task.isPriority);
-  const nonPriorityTasks =
-    tasks?.filter((task) => !task.isPriority && !task.isCompleted) || [];
+  const priorityTasks = tasks.filter((task: Task) => task.isPriority);
+  const nonPriorityTasks = tasks.filter(
+    (task) => !task.isPriority && !task.isCompleted
+  );
 
   if (isLoading) return <LoadingSpinner />;
 
   if (!user) {
     router.push("/landing");
-    return;
+    return null;
   }
 
   return (
@@ -217,15 +210,13 @@ export default function Home({
           Streamline your thoughts, boost productivity, and achieve peace of
           mind
         </p>
-        <TaskInput onAddTask={handleAddTask} />
+        <TaskInput onAddTask={handleAddTask} totalTasks={tasks.length} />
         <div className="flex flex-col-reverse lg:flex-row mt-8 gap-6">
           <div className="w-full lg:w-3/5 max-h-[500px] overflow-y-auto">
             <h2 className="text-xl font-semibold mb-2">Today&#39;s tasks</h2>
             <TaskList
               tasks={nonPriorityTasks}
-              onUpdateTask={(id: string, update: any) =>
-                handleUpdateTask(id, update)
-              }
+              onUpdateTask={handleUpdateTask}
               onDeleteTask={handleDeleteTask}
               priorityTasks={priorityTasks}
             />
@@ -235,9 +226,7 @@ export default function Home({
               <h2 className="text-xl font-semibold mb-2">Top 3 Priorities</h2>
               <PriorityTasks
                 tasks={priorityTasks.slice(0, 3)}
-                onUpdateTask={(id: string, update: any) =>
-                  handleUpdateTask(id, update)
-                }
+                onUpdateTask={handleUpdateTask}
                 onDeleteTask={handleDeleteTask}
               />
             </div>

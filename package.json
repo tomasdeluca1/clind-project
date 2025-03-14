@@ -25,7 +25,8 @@
     "react-big-calendar": "^1.15.0",
     "react-dom": "18.2.0",
     "react-error-boundary": "^5.0.0",
-    "react-hot-toast": "^2.5.1"
+    "react-hot-toast": "^2.5.1",
+    "sonner": "^2.0.1"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",

@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Footer from "./Footer";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { JSX } from "react";
+import { useFeatures } from "@/hooks/useFeatures";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,8 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps): JSX.Element {
   const { user, error, isLoading } = useUser();
+  const { canUseFeature } = useFeatures();
+
   if (isLoading) return <LoadingSpinner />;
   if (error) {
     return (
@@ -63,66 +66,61 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
         </div>
         <div className="flex-none">
           {user ? (
-            <>
-              <div className="dropdown dropdown-end">
-                <motion.div
-                  tabIndex={0}
-                  className="btn btn-ghost btn-circle avatar cursor-pointer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <div className="w-10 rounded-full">
-                    <Image
-                      src={user.picture || ""}
-                      alt={user.name || ""}
-                      width={50}
-                      height={50}
-                      className="rounded-full"
-                      quality={90}
-                      fetchPriority={"high"}
-                    />
-                  </div>
-                </motion.div>
-                <motion.ul
-                  tabIndex={0}
-                  className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <motion.li whileHover={{ scale: 1.05 }}>
-                    <Link
-                      href={`/calendar/${user.sub}`}
-                      className="flex items-center justify-between hover:bg-base-200 transition-colors duration-300 rounded-lg p-2"
-                    >
-                      Calendar
-                      <span className="badge badge-primary glass shadow-sm bg-primary/80">
-                        New
-                      </span>
-                    </Link>
-                  </motion.li>
-                  <motion.li whileHover={{ scale: 1.05 }}>
-                    <Link
-                      href={`/settings/${user.sub}`}
-                      className="flex items-center justify-between hover:bg-base-200 transition-colors duration-300 rounded-lg p-2"
-                    >
-                      Settings
-                      <span className="badge badge-primary glass shadow-sm bg-primary/80">
-                        New
-                      </span>
-                    </Link>
-                  </motion.li>
-                  <motion.li whileHover={{ scale: 1.05 }}>
-                    <Link
-                      href="/api/auth/logout"
-                      className="block hover:bg-base-200 transition-colors duration-300 rounded-lg p-2"
-                    >
-                      Logout
-                    </Link>
-                  </motion.li>
-                </motion.ul>
-              </div>
-            </>
+            <div className="dropdown dropdown-end">
+              <motion.div
+                tabIndex={0}
+                className="btn btn-ghost btn-circle avatar cursor-pointer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <div className="w-10 rounded-full">
+                  <Image
+                    src={user.picture || ""}
+                    alt={user.name || ""}
+                    width={50}
+                    height={50}
+                    className="rounded-full"
+                    quality={90}
+                    fetchPriority={"high"}
+                  />
+                </div>
+              </motion.div>
+              <motion.ul
+                tabIndex={0}
+                className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.li whileHover={{ scale: 1.05 }}>
+                  <Link
+                    href={`/calendar/${user.sub}`}
+                    className="flex items-center justify-between hover:bg-base-200 transition-colors duration-300 rounded-lg p-2"
+                  >
+                    Calendar
+                    <span className="badge badge-primary glass shadow-sm bg-primary/80">
+                      New
+                    </span>
+                  </Link>
+                </motion.li>
+                <motion.li whileHover={{ scale: 1.05 }}>
+                  <Link
+                    href={`/profile/${user.sub}`}
+                    className="flex items-center justify-between hover:bg-base-200 transition-colors duration-300 rounded-lg p-2"
+                  >
+                    Profile
+                  </Link>
+                </motion.li>
+                <motion.li whileHover={{ scale: 1.05 }}>
+                  <Link
+                    href="/api/auth/logout"
+                    className="block hover:bg-base-200 transition-colors duration-300 rounded-lg p-2"
+                  >
+                    Logout
+                  </Link>
+                </motion.li>
+              </motion.ul>
+            </div>
           ) : (
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
@@ -135,6 +133,7 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
           )}
         </div>
       </motion.header>
+
       <main className="flex-1 min-h-[70vh]">{children}</main>
       <Footer />
     </motion.div>
