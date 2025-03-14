@@ -254,6 +254,69 @@ export default async function handler(
           message: "Subscription paused successfully",
         });
 
+      case "subscription_resumed":
+        const user_email_resumed = body.data.attributes?.user_email;
+        if (!user_email_resumed) {
+          logger.error({
+            message: "Missing user_email in webhook",
+            webhook: body.meta,
+          });
+          return res.status(400).json({ error: "Missing customer ID" });
+        }
+
+        await updateSubscription(user_email_resumed, {
+          status: "active",
+          product_name: body.data.attributes.product_name,
+          endsAt: body.data.attributes.ends_at,
+          updatedAt: body.data.attributes.updated_at,
+          product_id: body.data.attributes.product_id,
+          variantId: body.data.attributes.variant_id,
+          lemonSqueezyId: body.data.id,
+          cancelAtPeriodEnd: body.data.attributes.cancel_at_period_end,
+          createdAt: body.data.attributes.created_at,
+        });
+
+        logger.info({
+          message: "Subscription resumed successfully",
+          user_email: user_email_resumed,
+          status: "active",
+        });
+
+        return res.status(200).json({
+          message: "Subscription resumed successfully",
+        });
+
+      case "subscription_unpaused ":
+        const user_email_unpaused = body.data.attributes?.user_email;
+        if (!user_email_unpaused) {
+          logger.error({
+            message: "Missing user_email in webhook",
+            webhook: body.meta,
+          });
+          return res.status(400).json({ error: "Missing customer ID" });
+        }
+
+        await updateSubscription(user_email_unpaused, {
+          status: "active",
+          product_name: body.data.attributes.product_name,
+          endsAt: body.data.attributes.ends_at,
+          updatedAt: body.data.attributes.updated_at,
+          product_id: body.data.attributes.product_id,
+          variantId: body.data.attributes.variant_id,
+          lemonSqueezyId: body.data.id,
+          cancelAtPeriodEnd: body.data.attributes.cancel_at_period_end,
+          createdAt: body.data.attributes.created_at,
+        });
+
+        logger.info({
+          message: "Subscription unpaused successfully",
+          user_email: user_email_unpaused,
+          status: "active",
+        });
+
+        return res.status(200).json({
+          message: "Subscription unpaused successfully",
+        });
       case "order_created":
         // Handle one-time purchases if needed
         logger.info({
